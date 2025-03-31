@@ -1,0 +1,11 @@
+/* Stil für die Überschrift */
+
+.formfeld {
+    text-align: center;
+    font-size: 4.5em; /* Größe der Schrift */
+    margin-top: 50px; /* Abstand nach oben */
+}
+
+h1 {
+    font-size: x-large;
+}
