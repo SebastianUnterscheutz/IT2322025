@@ -5,9 +5,7 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
-    command: ["./backend/main"]
-    volumes:
-      - .:/usr/src/app
+    command: ["./main"]
     depends_on:
       - db
 
