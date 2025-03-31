@@ -3,9 +3,11 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     command: ["./main"]
+    volumes:
+      - ./backend:/usr/src/app
     depends_on:
       - db
 
