@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: ./backend
-      dockerfile: /backend/Dockerfile
+      dockerfile: /backend/dockerfile
     command: ["./main"]
     depends_on:
       - db
