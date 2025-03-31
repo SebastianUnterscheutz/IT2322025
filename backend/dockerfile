@@ -1,20 +1,14 @@
-# Verwende ein Go-Image, um die Anwendung zu bauen
-FROM golang:1.23.2 AS builder
+# Basierend auf dem offiziellem Golang Docker-Image
+FROM golang:1.23
 
-# Setze das Arbeitsverzeichnis
-WORKDIR /usr/src/app
+# Erstellen Sie ein Arbeitsverzeichnis
+WORKDIR /go/src/app
 
-# Kopiere die Go-Module-Dateien und lade alle Abhängigkeiten
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Kopiere den Rest des Anwendungsquellcodes
+# Kopieren Sie alle .go-Dateien
 COPY . .
 
-# Baue die Anwendung
-RUN go build -o main
+# Kompilieren Sie das Go-Programm
+RUN go build -o main .
 
-# Verwende ein schlankes Image, um die Anwendung auszuführen
-FROM alpine:latest
-
+# Starten Sie die Anwendung beim Start des Containers
 CMD ["./main"]
