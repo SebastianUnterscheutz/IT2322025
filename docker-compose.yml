@@ -12,11 +12,6 @@ services:
   db:
     image: mariadb:latest
     restart: always
-    environment:
-      - MARIADB_ROOT_PASSWORD
-      - MARIADB_DATABASE
-      - MARIADB_USER
-      - MARIADB_PASSWORD
     volumes:
       - db_data:/var/lib/mysql
 
