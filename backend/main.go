@@ -14,7 +14,7 @@ func main() {
 	fileServer := http.FileServer(http.Dir(staticDir))
 
 	// Routen Sie alle Anfragen, die mit /static/ beginnen, an den FileServer
-	http.Handle("/static/", http.StripPrefix("/static", fileServer))
+	http.Handle("/", http.StripPrefix("/", fileServer))
 
 	// Starte den Server
 	log.Println("Starting server on :8080")
