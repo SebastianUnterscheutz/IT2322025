@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
+      context: ./backend/
       dockerfile: backend/Dockerfile
     command: ["./main"]
     depends_on:
