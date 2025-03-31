@@ -1,19 +1,19 @@
 package main
 
 import (
-	"html/template"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
+"log"
+"net/http"
 )
 
 func main() {
+	// Setze das Verzeichnis für die statischen Dateien
 	staticDir := "./frontend"
 
-	// Erzeuge einen FileServer für das statische Verzeichnis
+	// Erzeuge einen FileServer für das Verzeichnis
 	fileServer := http.FileServer(http.Dir(staticDir))
-	http.Handle("/", fileServer))
+
+	// Routen Sie alle Anfragen an den FileServer
+	http.Handle("/", fileServer)
 
 	// Starte den Server
 	log.Println("Starting server on :3000")
