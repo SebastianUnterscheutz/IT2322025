@@ -3,13 +3,16 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"main/db"
 	"net/http"
 )
 
 func main() {
 	// Setze das Verzeichnis für die statischen Dateien
 	staticDir := "./frontend"
+	dbCon := db.Init()
 
+	println(dbCon)
 	// Erzeuge einen FileServer für das Verzeichnis
 	fileServer := http.FileServer(http.Dir(staticDir))
 
