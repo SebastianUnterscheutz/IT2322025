@@ -9,28 +9,3 @@
 h1 {
     font-size: x-large;
 }
-
-.grid_block_2 {
-    display:grid;
-    grid-template-columns: 8% 8% 32% 31% 8% 8% ;
-    grid-template-rows: auto;
-    grid-gap: 0.8rem;
-    margin-left:5%;
-    margin-right:5%;
-    grid-template-areas:
-    '. . ueberschriften ueberschriften . .'
-    '. liste1 liste1 liste1 liste1 .'
-	'. liste1 liste1 liste1 liste1 .'
-	'. liste1 liste1 liste1 liste1 .'
-    '. liste1 liste1 liste1 liste1 .'
-	'. . liste2 liste2 . .'
-    '. . zeiten zeiten . .'
-}
-
-.nummer1 { grid-area: foto1; }
-.nummer2 { grid-area: zeiten;}
-.nummer3 { grid-area: ueberschriften; }
-.nummer4 { grid-area: liste1; }
-.nummer5 { grid-area: liste2; }
-.nummer6 { grid-area: foto2; }
-.nummer7 { grid-area: foto3; }
