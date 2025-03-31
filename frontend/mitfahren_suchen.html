@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Mitfahrangebot</title>
+</head>
+<body>
+    <h1>Mitfahrangebot</h1>
+    <div class="formfeld">
+        <form action="#" method="POST">
+            <label for="plz">Postleitzahl:</label>
+            <input type="text" id="plz" name="plz" required placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
+            <br><br>
+
+            <label for="ort">Ort:</label>
+            <input type="text" id="ort" name="ort" required placeholder="Ort eingeben">
+            <br><br>
+
+            <label for="radius">Umkreis:</label>
+            <input type="text" id="radius" name="radius" required placeholder="Radius eingeben">
+            <br><br>
+
+            <input type="submit" value="Absenden">
+        </form>
+    </div>
+</body>
+
+</html>

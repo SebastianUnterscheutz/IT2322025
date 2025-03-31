@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitfahrgelegenheit anbieten</title>
+</head>
+<body>
+<h1>Mitfahrgelegenheit anbieten</h1>
+<a href="index.html">Zurück zur Startseite</a>
+
+<form id="offerForm" method="post">
+    <label>PLZ*: <input type="text" name="plz" required placeholder="PLZ"></label><br>
+    <label>Ort*: <input type="text" name="ort" required placeholder="Ort"></label><br>
+    <label>Straße und Hausnummer: <input type="text" name="strasse" placeholder="Straße und Hausnr."></label><br>
+    <label>Name*: <input type="text" name="name" required placeholder="Name"></label><br>
+    <label>Vorname: <input type="text" name="vorname" placeholder="Vorname"></label><br>
+    <label>E-Mail*: <input type="email" name="email" required placeholder="E-Mail"></label><br>
+    <label>Klasse: <input type="text" name="klasse" placeholder="Klasse"></label><br>
+    <label>Handynummer: <input type="tel" name="handy" placeholder="Handynummer"></label><br>
+    <label>Gültig von: <input type="date" name="gueltig_von"></label><br>
+    <label>Gültig bis: <input type="date" name="gueltig_bis"></label><br>
+    <label>Weitere Informationen: <textarea name="info" placeholder="Informationen"></textarea></label><br>
+    <button type="submit">Mitfahrgelegenheit anbieten</button>
+</form>
+<script src="script.js"></script>
+</body>
+</html>

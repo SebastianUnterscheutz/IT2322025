@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handbuch zur Mitfahrgelegenheiten-Web-Applikation</title>
+</head>
+<body>
+<header>
+    <h1>Handbuch zur Mitfahrgelegenheiten-Web-Applikation</h1>
+    <p>Fahrgemeinschaften für den Weg zum BSZ Vogtland in Rodewisch</p>
+</header>
+
+<section id="einleitung">
+    <h2>Einleitung</h2>
+    <p>Dieses Handbuch beschreibt die Nutzung und Funktionalitäten der Fahrgemeinschafts-Web-Applikation, die es Benutzern ermöglicht, Mitfahrgelegenheiten anzubieten oder zu suchen, speziell für den Weg zum BSZ Vogtland in Rodewisch.</p>
+    <p>Die Software bietet eine benutzerfreundliche Oberfläche zur Eingabe und Suche von Fahrgemeinschaften sowie zur Anzeige von Mitfahrgelegenheiten auf einer interaktiven Karte. Sie ermöglicht den Benutzern, sowohl als Mitfahrer als auch als Fahrer mitzufahren und eine geeignete Fahrgelegenheit zu finden.</p>
+</section>
+
+<section id="systemanforderungen">
+    <h2>Systemanforderungen</h2>
+    <p>Bevor Sie die Anwendung nutzen können, stellen Sie bitte sicher, dass folgende Voraussetzungen erfüllt sind:</p>
+    <ul>
+        <li>Internetbrowser: Chrome, Firefox, Safari</li>
+        <li>Keine speziellen Installationen erforderlich</li>
+    </ul>
+</section>
+
+<section id="funktionalitaeten">
+    <h2>Funktionalitäten</h2>
+
+    <h3>Mitfahrgelegenheit anbieten</h3>
+    <p><strong>Beschreibung:</strong> Diese Funktion ermöglicht es den Nutzern, eine Mitfahrgelegenheit anzubieten.</p>
+    <p><strong>Formularfelder:</strong></p>
+    <ul>
+        <li><strong>PLZ:</strong> (Pflichtfeld) Geben Sie Ihre Postleitzahl ein.</li>
+        <li><strong>Ort:</strong> (Pflichtfeld) Geben Sie den Ort ein, von dem Sie abfahren.</li>
+        <li><strong>Straße, Hausnummer:</strong> (Optional) Geben Sie die Straße und Hausnummer ein.</li>
+        <li><strong>Name:</strong> (Pflichtfeld) Geben Sie Ihren Nachnamen ein.</li>
+        <li><strong>Vorname:</strong> (Optional) Geben Sie Ihren Vornamen ein.</li>
+        <li><strong>E-Mail:</strong> (Pflichtfeld) Geben Sie Ihre E-Mail-Adresse ein.</li>
+        <li><strong>Klasse:</strong> (Optional) Geben Sie Ihre Klasse ein (z. B. IT23x).</li>
+        <li><strong>Handynummer:</strong> (Optional) Geben Sie Ihre Handynummer ein.</li>
+        <li><strong>Gültigkeitsdatum von:</strong> (Optional, Standard: ab sofort) Das Startdatum der Mitfahrgelegenheit.</li>
+        <li><strong>Gültigkeitsdatum bis:</strong> (Optional, Standard: 6 Monate) Das Enddatum der Mitfahrgelegenheit.</li>
+        <li><strong>Weitere Informationen:</strong> (Optional) Geben Sie Zusatzinformationen wie Kostenbeteiligung ein.</li>
+    </ul>
+    <p><strong>Funktionsweise:</strong> Wenn das Formular erfolgreich ausgefüllt ist, wird eine Mitfahrgelegenheit erstellt und in der Datenbank gespeichert. Ein Zufallscode wird generiert, um das Angebot später zu bearbeiten oder zu löschen. Der Benutzer erhält eine Bestätigung per E-Mail.</p>
+
+    <h3>Mitfahrgelegenheit suchen</h3>
+    <p><strong>Beschreibung:</strong> Diese Funktion erlaubt es den Nutzern, nach Mitfahrgelegenheiten zu suchen.</p>
+    <p><strong>Eingabefelder:</strong></p>
+    <ul>
+        <li><strong>PLZ:</strong> (Pflichtfeld) Geben Sie Ihre Postleitzahl ein.</li>
+        <li><strong>Ort:</strong> (Pflichtfeld) Geben Sie den Ort ein, in dem Sie eine Mitfahrgelegenheit suchen.</li>
+    </ul>
+    <p><strong>Kartenanzeige:</strong> Nach der Eingabe der Postleitzahl und des Ortes werden alle Mitfahrgelegenheiten auf einer Karte angezeigt. Durch Klicken auf einen Pin auf der Karte erhalten Sie weitere Informationen zu der Mitfahrgelegenheit, wie Name des Anbieters, Startzeit und -ort sowie eine Kontaktmöglichkeit.</p>
+
+    <h3>Erweiterte Funktionen</h3>
+    <ul>
+        <li><strong>Umkreissuche:</strong> Suche nach Mitfahrgelegenheiten im Umkreis von z.B. 5 km Luftlinie.</li>
+        <li><strong>Liste der Mitfahrgelegenheiten:</strong> Darstellung der Mitfahrgelegenheiten als Liste mit den wichtigsten Informationen.</li>
+        <li><strong>Schutz gegen Fake-Angebote:</strong> Die Applikation ist gegen massenhafte Fake-Angebote geschützt. Falsche oder unvollständige Angaben werden abgefangen und können vom Support bearbeitet werden.</li>
+    </ul>
+</section>
+
+<section id="technische-details">
+    <h2>Technische Details</h2>
+
+    <h3>Datenbankstruktur</h3>
+    <ul>
+        <li><strong>Mitfahrgelegenheiten:</strong> Tabelle mit den Feldern (PLZ, Ort, Straße, Hausnummer, Name, E-Mail, etc.).</li>
+        <li><strong>Benutzerdaten:</strong> Speicherung von Informationen für das Bearbeiten der Angebote.</li>
+        <li><strong>Umkreissuche:</strong> Implementierung einer geografischen Suche für die Mitfahrgelegenheiten.</li>
+    </ul>
+
+    <h3>Technologie-Stack</h3>
+    <ul>
+        <li><strong>Frontend:</strong> HTML, CSS, JavaScript, OpenStreetMap API für die Kartenanzeige.</li>
+        <li><strong>Backend:</strong> PHP mit MySQL-Datenbank für die Speicherung der Mitfahrgelegenheiten.</li>
+        <li><strong>Benutzerdaten:</strong> Sicherheit durch Verschlüsselung von persönlichen Daten.</li>
+    </ul>
+</section>
+
+<section id="fehlerbehandlung">
+    <h2>Fehlerbehandlung und Eingabekontrollen</h2>
+    <ul>
+        <li><strong>Pflichtfelder:</strong> Alle Pflichtfelder müssen vor dem Absenden ausgefüllt werden.</li>
+        <li><strong>Datenvalidierung:</strong> Eine E-Mail-Adresse muss im richtigen Format eingegeben werden. Alle Zahlen müssen numerisch sein, und die Postleitzahl muss eine gültige Formatierung haben.</li>
+        <li><strong>Fehlermeldungen:</strong> Bei falschen Eingaben zeigt das System hilfreiche Fehlermeldungen, um den Benutzer bei der Korrektur zu unterstützen.</li>
+    </ul>
+</section>
+
+<section id="nutzerhilfe">
+    <h2>Nutzerhilfe und Support</h2>
+    <p>Für technische Probleme oder Anfragen zum Anlegen und Bearbeiten von Mitfahrgelegenheiten steht unser Support-Team zur Verfügung. Sie können uns per E-Mail oder über das Kontaktformular erreichen.</p>
+</section>
+
+<section id="design-und-ux">
+    <h2>Design und User Experience</h2>
+    <p>Die Anwendung ist so gestaltet, dass sie eine einfache und benutzerfreundliche Navigation ermöglicht. Die interaktive Karte bietet eine klare Darstellung der verfügbaren Mitfahrgelegenheiten. Durch klare Felder und erklärende Texte wird der Nutzer durch den Prozess geführt, ohne dass er auf zusätzliche Hilfe angewiesen ist.</p>
+</section>
+
+<section id="sicherheit-und-datenschutz">
+    <h2>Sicherheit und Datenschutz</h2>
+    <ul>
+        <li><strong>Datenverschlüsselung:</strong> Alle persönlichen Daten werden sicher verschlüsselt gespeichert.</li>
+        <li><strong>Zugangskontrolle:</strong> Jeder Benutzer kann nur seine eigenen Mitfahrgelegenheiten bearbeiten oder löschen.</li>
+    </ul>
+</section>
+
+<section id="uml">
+    <h2>Anwendungsfalldiagramm und Aktivitätsdiagramm</h2>
+    <p>Das Anwendungsfalldiagramm und das Aktivitätsdiagramm visualisieren den Ablauf und die Interaktionen zwischen den Nutzern und der Applikation. Diese Diagramme sollten in einem UML-Dokument erstellt werden und beinhalten:</p>
+    <ul>
+        <li><strong>Anwendungsfalldiagramm:</strong> Zeigt die wichtigsten Anwendungsfälle (Mitfahrgelegenheit anbieten, Mitfahrgelegenheit suchen, Benutzerdaten verwalten).</li>
+        <li><strong>Aktivitätsdiagramm:</strong> Zeigt die Ablauflogik für das Anbieten und Suchen von Mitfahrgelegenheiten.</li>
+    </ul>
+</section>
+
+<footer>
+    <p>&copy; 2025 BSZ Vogtland</p>
+</footer>
+</body>
+</html>
