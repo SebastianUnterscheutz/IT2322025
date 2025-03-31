@@ -1,15 +1,12 @@
-# Verwende ein Go-Image, um die Anwendung zu bauen
-FROM golang:1.23.2 AS builder
-
 # Setze das Arbeitsverzeichnis
 WORKDIR /usr/src/app
 
 # Kopiere die Go-Module-Dateien und lade alle Abhängigkeiten
-COPY go.mod go.sum ./
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 # Kopiere den Rest des Anwendungsquellcodes
-COPY . .
+COPY backend/ .
 
 # Baue die Anwendung
 RUN go build -o main
