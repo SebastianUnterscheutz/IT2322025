@@ -28,8 +28,5 @@ RUN chmod 7777 ./main
 # Debugging: Überprüfe den Inhalt des Verzeichnisses
 RUN ls -la
 
-# Überprüfe die Binärdatei
-RUN file ./main
-
 # Setze den Standardbefehl
 CMD ["./main"]
