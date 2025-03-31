@@ -34,36 +34,43 @@ func Init() *sql.DB {
 	}
 
 	// Erstelle eine Tabelle, falls sie nicht existiert
-	createTableSQL := `
-		CREATE TABLE IF NOT EXISTS rides (
-    		id INT AUTO_INCREMENT PRIMARY KEY,
-    		name VARCHAR(100) NOT NULL,
-    		first_name VARCHAR(100),
-    		email VARCHAR(100) NOT NULL,
-    		class VARCHAR(10),
-    		phone_number VARCHAR(20),
-    		valid_from DATE,
-    		valid_until DATE,
-    		additional_information TEXT,
-    		other TEXT,
-    		token VARCHAR(100),
-    		activated BOOLEAN
-		);
+	// Erstelle die Tabelle `rides`
+	createRidesTableSQL := `
+	CREATE TABLE IF NOT EXISTS rides (
+		id INT AUTO_INCREMENT PRIMARY KEY,
+		name VARCHAR(100) NOT NULL,
+		first_name VARCHAR(100),
+		email VARCHAR(100) NOT NULL,
+		class VARCHAR(10),
+		phone_number VARCHAR(20),
+		valid_from DATE,
+		valid_until DATE,
+		additional_information TEXT,
+		other TEXT,
+		token VARCHAR(100),
+		activated BOOLEAN
+	);`
 
-
-		CREATE TABLE IF NOT EXISTS locations_on_the_way (
-    		id INT AUTO_INCREMENT PRIMARY KEY,
-    		rides_id INT NOT NULL,
-    		plz VARCHAR(10) NOT NULL,
-    		city VARCHAR(100) NOT NULL,
-    		street VARCHAR(100),
-    		house_number VARCHAR(10),
-    		FOREIGN KEY (rides_id) REFERENCES rides(id)
-		);`
-
-	_, err = db.Exec(createTableSQL)
+	_, err = db.Exec(createRidesTableSQL)
 	if err != nil {
-		log.Fatalf("Could not create table: %v\n", err)
+		log.Fatalf("Could not create rides table: %v\n", err)
+	}
+
+	// Erstelle die Tabelle `locations_on_the_way`
+	createLocationsTableSQL := `
+	CREATE TABLE IF NOT EXISTS locations_on_the_way (
+		id INT AUTO_INCREMENT PRIMARY KEY,
+		rides_id INT NOT NULL,
+		plz VARCHAR(10) NOT NULL,
+		city VARCHAR(100) NOT NULL,
+		street VARCHAR(100),
+		house_number VARCHAR(10),
+		FOREIGN KEY (rides_id) REFERENCES rides(id)
+	);`
+
+	_, err = db.Exec(createLocationsTableSQL)
+	if err != nil {
+		log.Fatalf("Could not create locations_on_the_way table: %v\n", err)
 	}
 
 	log.Println("Database initialized successfully.")
