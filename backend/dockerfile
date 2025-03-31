@@ -1,5 +1,5 @@
 # Verwende ein Go-Image, um die Anwendung zu bauen
-FROM 1.23.2 AS builder
+FROM golang:1.23.2 AS builder
 
 # Setze das Arbeitsverzeichnis
 WORKDIR /usr/src/app
