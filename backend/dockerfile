@@ -22,5 +22,8 @@ WORKDIR /root/
 # Kopiere die gebaute Go-Anwendung aus der vorherigen Stage
 COPY --from=builder /usr/src/app/main .
 
+# Debugging: Überprüfe den Inhalt des Verzeichnisses
+RUN ls -la
+
 # Setze den Standardbefehl
 CMD ["./main"]
