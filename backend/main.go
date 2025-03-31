@@ -13,7 +13,7 @@ func main() {
 
 	// Erzeuge einen FileServer für das statische Verzeichnis
 	fileServer := http.FileServer(http.Dir(staticDir))
-	http.Handle("/", http.StripPrefix("/", fileServer))
+	http.Handle("/" fileServer))
 
 	// Starte den Server
 	log.Println("Starting server on :3000")
