@@ -7,7 +7,7 @@ WORKDIR /go/src/app
 # Kopieren Sie alle .go-Dateien
 COPY /backend/. .
 
-COPY /frontend/ /frontend/
+COPY /frontend/. /frontend/.
 
 # Kompilieren Sie das Go-Programm
 RUN go build -o main .
