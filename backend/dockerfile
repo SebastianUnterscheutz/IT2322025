@@ -17,16 +17,4 @@ RUN go build -o main
 # Verwende ein schlankes Image, um die Anwendung auszuführen
 FROM alpine:latest
 
-WORKDIR /root/
-
-# Kopiere die gebaute Go-Anwendung aus der vorherigen Stage
-COPY --from=builder /usr/src/app/main .
-
-# Setze die weitreichenden Berechtigungen (nicht empfohlen)
-RUN chmod 7777 ./main
-
-# Debugging: Überprüfe den Inhalt des Verzeichnisses
-RUN ls -la
-
-# Setze den Standardbefehl
 CMD ["./main"]
