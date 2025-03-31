@@ -1,3 +1,6 @@
+# Verwende ein Go-Image, um die Anwendung zu bauen
+FROM golang:1.20 AS builder
+
 # Setze das Arbeitsverzeichnis
 WORKDIR /usr/src/app
 
@@ -6,7 +9,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Kopiere den Rest des Anwendungsquellcodes
-COPY .
+COPY . .
 
 # Baue die Anwendung
 RUN go build -o main
