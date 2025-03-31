@@ -6,34 +6,19 @@ import (
 	"time"
 )
 
-// LoggerMiddleware loggt jede Anfrage mit ihrem Methodentyp, URL und Antwortzeit
-func LoggerMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
-		// Logge die Anfrage
-		log.Printf("Received %s request for %s", r.Method, r.URL.Path)
-
-		// Rufe den nächsten Handler auf
-		next.ServeHTTP(w, r)
-
-		// Logge die Antwortzeit
-		log.Printf("Completed %s request for %s in %v", r.Method, r.URL.Path, time.Since(start))
-	})
-}
-
 func main() {
-	// Einfache HTTP-Handler-Funktion
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, world!"))
-	})
+	// Setze den Pfad für die statischen Dateien
+	staticDir := "./frontend"
 
-	// Verwende die LoggerMiddleware
-	http.Handle("/", LoggerMiddleware(handler))
+	// Erzeuge einen FileServer für das statische Verzeichnis
+	fileServer := http.FileServer(http.Dir(staticDir))
+
+	// Routen Sie alle Anfragen, die mit /static/ beginnen, an den FileServer
+	http.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	// Starte den Server
-	log.Println("Starting server on :3000")
-	if err := http.ListenAndServe(":3000", nil); err != nil {
+	log.Println("Starting server on :8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("could not start server: %s\n", err)
 	}
 }
