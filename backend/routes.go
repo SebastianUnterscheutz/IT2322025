@@ -15,18 +15,18 @@ import (
 
 // Offer beschreibt die Datenstruktur eines Angebots
 type Offer struct {
-	Name                  string    `json:"name"`
-	FirstName             string    `json:"first_name"`
-	Email                 string    `json:"email"`
-	Class                 string    `json:"class"`
-	PhoneNumber           string    `json:"phone_number"`
-	ValidFrom             time.Time `json:"valid_from"`
-	ValidUntil            time.Time `json:"valid_until"`
-	AdditionalInformation string    `json:"additional_information"`
-	Other                 string    `json:"other"`
-	Token                 string    `json:"token"`
-	Activated             bool      `json:"activated"`
-	OfferLocations        []OfferLocations
+	Name                  string           `json:"name"`
+	FirstName             string           `json:"first_name"`
+	Email                 string           `json:"email"`
+	Class                 string           `json:"class"`
+	PhoneNumber           string           `json:"phone_number"`
+	ValidFrom             time.Time        `json:"valid_from"`
+	ValidUntil            time.Time        `json:"valid_until"`
+	AdditionalInformation string           `json:"additional_information"`
+	Other                 string           `json:"other"`
+	Token                 string           `json:"token"`
+	Activated             bool             `json:"activated"`
+	OfferLocations        []OfferLocations `json:"offer_locations"`
 }
 
 // Offer Locations
