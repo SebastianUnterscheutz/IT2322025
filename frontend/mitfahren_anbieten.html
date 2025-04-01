@@ -133,9 +133,9 @@
             body: JSON.stringify(data)
         }).then(response => {
             if (response.ok) {
-                alert('Angebot erfolgreich erstellt.');
+                alert('Angebot erfolgreich erstellt.' + data);
             } else {
-                alert('Fehler beim Erstellen des Angebots.');
+                alert('Fehler beim Erstellen des Angebots.'+ data);
             }
         }).catch(error => {
             alert('Verbindungsfehler: ' + error.message);

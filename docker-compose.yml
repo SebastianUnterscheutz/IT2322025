@@ -11,6 +11,12 @@ services:
   db:
     image: mariadb:latest
     restart: always
+    environment:
+      - MARIADB_DATABASE=ride_sharing
+      - MARIADB_HOSTNAME=db
+      - MARIADB_PASSWORD=fpofwapjiaäpjwä82qioajäpdoaä
+      - MARIADB_ROOT_PASSWORD=dwokpojfwaPIJWfoij209qo9pa
+      - MARIADB_USER=ride_sharing
     volumes:
       - db_data:/var/lib/mysql
 
