@@ -55,10 +55,6 @@ func Init() *sql.DB {
 		log.Fatalf("Could not create rides table: %v\n", err)
 	}
 
-	// Remove
-	remove := "DROP TABLE IF EXISTS locations_on_the_way;"
-	_, err = db.Exec(remove)
-
 	// Erstelle die Tabelle `locations_on_the_way`
 	createLocationsTableSQL := `
 	CREATE TABLE IF NOT EXISTS locations_on_the_way (
