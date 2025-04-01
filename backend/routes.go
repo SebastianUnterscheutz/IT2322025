@@ -165,7 +165,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		insertLocationSQL := `
 			INSERT INTO locations_on_the_way (
 			rides_id, plz, city, street, house_number, latitude, longitude
-			) VALUES (?, ?, ?, ?, ?)`
+			) VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 		location.Latitude = lat
 		location.Longitude = lng
