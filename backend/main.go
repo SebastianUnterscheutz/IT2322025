@@ -9,7 +9,7 @@ import (
 func main() {
 	// Setze das Verzeichnis für die statischen Dateien
 	staticDir := "./frontend"
-	dbCon := db.Init()
+	dbCon = db.Init()
 
 	println(dbCon)
 	// Erzeuge einen FileServer für das Verzeichnis
