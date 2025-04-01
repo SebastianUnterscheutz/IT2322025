@@ -57,7 +57,7 @@
 </div>
 <script>
     // Aufklappen/Zu klappen des zusätzlichen Formulars
-    document.getElementById('togglePlaces').addEventListener('click', function() {
+    document.getElementById('togglePlaces').addEventListener('click', function () {
         var placesForm = document.getElementById('placesForm');
         if (placesForm.style.display === 'none') {
             placesForm.style.display = 'block';
@@ -67,14 +67,11 @@
     });
 
     // Hinzufügen eines neuen Orts
-    document.getElementById('addPlace').addEventListener('click', function() {
-        // Abrufen der Werte
+    document.getElementById('addPlace').addEventListener('click', function () {
         var ort = document.querySelector('input[name="weiterer_ort[]"]').value;
         var plz = document.querySelector('input[name="weiterer_plz[]"]').value;
 
-        // Validierung
         if (ort && plz) {
-            // Hinzufügen der neuen Ortsangabe zum Formular
             var ortInput = document.createElement('input');
             ortInput.type = 'text';
             ortInput.name = 'ort[]';
@@ -91,16 +88,58 @@
             additionalPlaces.appendChild(ortInput);
             additionalPlaces.appendChild(plzInput);
 
-            // Dem Formular hinzufügen
             document.querySelector('#offerForm').insertBefore(additionalPlaces, document.querySelector('.anbieten_button'));
 
-            // Eingabefelder leeren und das Formular schließen
             document.querySelector('input[name="weiterer_ort[]"]').value = '';
             document.querySelector('input[name="weiterer_plz[]"]').value = '';
             document.getElementById('placesForm').style.display = 'none';
         } else {
             alert('Bitte Ort und PLZ eingeben.');
         }
+    });
+
+    // Daten senden
+    document.getElementById('offerForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData(event.target);
+        var data = {
+            name: formData.get('name'),
+            first_name: formData.get('vorname'),
+            email: formData.get('email'),
+            class: formData.get('klasse'),
+            phone_number: formData.get('handy'),
+            valid_from: formData.get('gueltig_von'),
+            valid_until: formData.get('gueltig_bis'),
+            additional_information: formData.get('info'),
+            offer_locations: []
+        };
+
+        var locations = document.querySelectorAll('[name^="ort"], [name^="plz"]');
+        for (var i = 0; i < locations.length; i += 2) {
+            data.offer_locations.push({
+                plz: locations[i + 1].value,
+                city: locations[i].value,
+                street: formData.get('strasse'),
+                house_number: formData.get('hausnummer')
+            });
+        }
+
+        fetch('https://it232.zbcs.eu/api/create/offer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                alert('Angebot erfolgreich erstellt.');
+            } else {
+                alert('Fehler beim Erstellen des Angebots.');
+            }
+        }).catch(error => {
+            alert('Verbindungsfehler: ' + error.message);
+        });
     });
 </script>
 <script src="script.js"></script>
