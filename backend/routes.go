@@ -58,6 +58,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	// JSON-Daten aus dem Request-Body einlesen
 	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
+		println(err)
 		http.Error(w, "Invalid input data", http.StatusBadRequest)
 		return
 	}
