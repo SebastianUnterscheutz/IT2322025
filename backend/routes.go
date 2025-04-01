@@ -221,8 +221,103 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Abfrage der Koordinaten aus der Datenbank
-	query := "SELECT id, rides_id, plz, city, street, house_number, latitude, longitude FROM locations_on_the_way"
+	query := `
+		SELECT 
+			rides.id AS ride_id, 
+			rides.name AS ride_name, 
+			rides.first_name, 
+			rides.valid_from, 
+			rides.valid_until,
+			locations_on_the_way.id AS location_id,
+			locations_on_the_way.plz, 
+			locations_on_the_way.city, 
+			locations_on_the_way.street, 
+			locations_on_the_way.house_number, 
+			locations_on_the_way.latitude, 
+			locations_on_the_way.longitude
+		FROM 
+			rides
+		LEFT JOIN 
+			locations_on_the_way 
+		ON 
+			rides.id = locations_on_the_way.rides_id
+	`
 	rows, err := dbCon.Query(query)
+	if err != nil {
+		http.Error(w, "Could not query rides and locations", http.StatusInternalServerError)
+		log.Printf("Error querying rides and locations: %v", err)
+		return
+	}
+	defer rows.Close()
+
+	type RideWithLocations struct {
+		RideID     int              `json:"ride_id"`
+		RideName   string           `json:"ride_name"`
+		FirstName  string           `json:"first_name"`
+		ValidFrom  string           `json:"valid_from"`
+		ValidUntil string           `json:"valid_until"`
+		Locations  []OfferLocations `json:"locations"`
+	}
+
+	ridesMap := make(map[int]*RideWithLocations)
+
+	for rows.Next() {
+		var rideID int
+		var rideName, firstName, validFrom, validUntil sql.NullString
+		var location OfferLocations
+
+		err := rows.Scan(
+			&rideID,
+			&rideName,
+			&firstName,
+			&validFrom,
+			&validUntil,
+			&location.ID,
+			&location.PLZ,
+			&location.City,
+			&location.Street,
+			&location.HouseNumber,
+			&location.Latitude,
+			&location.Longitude,
+		)
+		if err != nil {
+			http.Error(w, "Could not scan rides and locations data", http.StatusInternalServerError)
+			log.Printf("Error scanning row: %v", err)
+			return
+		}
+
+		// Check if the ride already exists in the map
+		if _, exists := ridesMap[rideID]; !exists {
+			ridesMap[rideID] = &RideWithLocations{
+				RideID:     rideID,
+				RideName:   rideName.String,
+				FirstName:  firstName.String,
+				ValidFrom:  validFrom.String,
+				ValidUntil: validUntil.String,
+				Locations:  []OfferLocations{},
+			}
+		}
+
+		// Append the location to the ride's location list
+		if location.ID != 0 { // Only add location if it exists
+			ridesMap[rideID].Locations = append(ridesMap[rideID].Locations, location)
+		}
+	}
+
+	// Convert the map to a slice
+	var rides []RideWithLocations
+	for _, ride := range ridesMap {
+		rides = append(rides, *ride)
+	}
+
+	// Set the content type to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Encode the result as JSON and send it
+	if err := json.NewEncoder(w).Encode(rides); err != nil {
+		http.Error(w, "Could not encode rides data to JSON", http.StatusInternalServerError)
+		return
+	}
 	if err != nil {
 		http.Error(w, "Could not query locations", http.StatusInternalServerError)
 		log.Printf("Error querying locations: %v", err)
