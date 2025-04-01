@@ -108,6 +108,19 @@ input, textarea {
     transition: border-color 0.3s ease;
 }
 
+.place-entry {
+    margin-bottom: 10px;
+    display:flex;
+}
+
+.place-entry input {
+    margin-right: 10px;
+}
+
+.place-entry input:last-child {
+    margin-right: 0;
+}
+
 input:focus, textarea:focus {
     border-color: #007bff;
     outline: none;
