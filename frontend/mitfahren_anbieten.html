@@ -29,7 +29,7 @@
     </div>
     <div class="form">
         <form id="offerForm" method="post">
-            <label>PLZ *: <input type="number" max=5 name="plz" required placeholder="PLZ"></label><br>
+            <label>PLZ *: <input type="number" name="plz" required placeholder="PLZ"></label><br>
             <label>Ort *: <input type="text" name="ort" required placeholder="Ort"></label><br>
             <label>Straße: <input type="text" name="strasse" placeholder="Straße"></label><br>
             <label>Hausnummer: <input type="text" name="hausnummer" placeholder="Hausnummer"></label><br>
@@ -43,15 +43,17 @@
             <label>Weitere Informationen: <textarea name="info" placeholder="Informationen"></textarea></label><br>
 
             <label>
-                <button type="button" id="togglePlaces" class="toggle-places">+ Weitere Orte zum Mitnehmen</button>
-                <div id="placesForm" class="places-form" style="display: none;">
-                    <label>Ort: <input type="text" name="weiterer_ort[]" placeholder="Ort"></label><br>
-                    <label>PLZ: <input type="number" name="weiterer_plz[]" placeholder="PLZ"></label><br>
-                    <button class="hinzufuegen_button" type="button" id="addPlace">Hinzufügen</button>
+                <div class="additional-places">
+                    <button type="button" id="togglePlaces" class="toggle-places">+ Weitere Orte zum Mitnehmen</button>
+                    <div id="placesForm" class="places-form" style="display: none;">
+                        <label>Ort: <input type="text" name="weiterer_ort[]" placeholder="Ort"></label><br>
+                        <label>PLZ: <input type="number" name="weiterer_plz[]" placeholder="PLZ"></label><br>
+                        <button class="hinzufuegen_button" type="button" id="addPlace">Hinzufügen</button>
+                    </div>
                 </div>
             </label>
-
-            <button class="anbieten_button" type="submit">Mitfahrgelegenheit anbieten</button>
+            <br>
+            <button id="anbieten" class="anbieten_button" type="submit">Mitfahrgelegenheit anbieten</button>
         </form>
     </div>
 </div>
@@ -87,7 +89,8 @@
             plzInput.value = plz;
             plzInput.readOnly = true;
 
-            var additionalPlaces = document.createElement('div');
+            var additionalPlaces = document.createElement('label');
+            additionalPlaces.classList.add('place-entry');
             additionalPlaces.appendChild(ortInput);
             additionalPlaces.appendChild(plzInput);
 
@@ -102,6 +105,7 @@
             alert('Bitte Ort und PLZ eingeben.');
         }
     });
+
 </script>
 <script src="script.js"></script>
 </body>
