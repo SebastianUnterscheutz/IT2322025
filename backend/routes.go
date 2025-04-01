@@ -24,6 +24,10 @@ type Offer struct {
 	Other                 string    `json:"other"`
 	Token                 string    `json:"token"`
 	Activated             bool      `json:"activated"`
+	City                  string    `json:"ort"`
+	PostalCode            string    `json:"plz"`
+	Street                string    `json:"strasse"`
+	HouseNumber           string    `json:"hausnummer"`
 }
 
 // Globale Datenbankverbindung
@@ -45,8 +49,14 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	offer.Token = fmt.Sprintf("%s-%s-%s-%s", randomString(4), randomString(4), randomString(4), randomString(3))
+	// Überprüfen, ob alle Pflichtfelder ausgefüllt sind
+	if offer.PostalCode == "" || offer.City == "" || offer.Name == "" || offer.Email == "" || offer.Class == "" {
+		http.Error(w, "Missing required fields (PLZ, Ort, Name, E-Mail, Klasse)", http.StatusBadRequest)
+		return
+	}
 
+	offer.Token = fmt.Sprintf("%s-%s-%s-%s", randomString(4), randomString(4), randomString(4), randomString(3))
+	offer.Activated = false
 	// Validate required fields are not empty
 	if offer.Name == "" || offer.FirstName == "" || offer.Email == "" || offer.Class == "" ||
 		offer.PhoneNumber == "" || offer.Token == "" {
@@ -95,7 +105,20 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(
+	insertLocationSQL := `
+INSERT INTO locations_on_the_way (
+	rides_id, plz, city, street, house_number
+) VALUES (?, ?, ?, ?, ?)`
+
+	stmtLocation, err := dbCon.Prepare(insertLocationSQL)
+	if err != nil {
+		http.Error(w, "Could not prepare insert statement for locations", http.StatusInternalServerError)
+		log.Printf("Error preparing insert statement for locations: %v", err)
+		return
+	}
+	defer stmtLocation.Close()
+
+	id, err := stmt.Exec(
 		offer.Name,
 		offer.FirstName,
 		offer.Email,
@@ -108,9 +131,24 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		offer.Token,
 		offer.Activated,
 	)
+	log.Printf(" Rides query: %v", id)
 	if err != nil {
 		http.Error(w, "Could not execute SQL statement", http.StatusInternalServerError)
 		log.Printf("Error executing query: %v", err)
+		return
+	}
+
+	// Füge Eintrag basierend auf Informationen im `offer` ein
+	_, err = stmtLocation.Exec(
+		/* rides_id */ 1,  // Beispiel rides_id, anpassen, um relevante ID zu übernehmen
+		offer.PostalCode,  // PLZ aus dem offer Struct
+		offer.City,        // Ort aus dem offer Struct
+		offer.Street,      // Straße aus dem offer Struct
+		offer.HouseNumber, // Hausnummer (optional, falls nicht im Struct)
+	)
+	if err != nil {
+		http.Error(w, "Could not execute insert for locations", http.StatusInternalServerError)
+		log.Printf("Error executing insert for locations: %v", err)
 		return
 	}
 
