@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mitfahrgelegenheit anbieten</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
 </head>
 <body>
 <div class="anbieten_container">
@@ -29,12 +32,12 @@
     </div>
     <div class="form">
         <form id="offerForm" method="post">
-            <label>PLZ *: <input type="number" name="plz" required placeholder="PLZ"></label><br>
+            <label>PLZ *: <input type="number" maxlength="5" name="plz" required placeholder="PLZ"></label><br>
             <label>Ort *: <input type="text" name="ort" required placeholder="Ort"></label><br>
             <label>Straße: <input type="text" name="strasse" placeholder="Straße"></label><br>
             <label>Hausnummer: <input type="text" name="hausnummer" placeholder="Hausnummer"></label><br>
-            <label>Name *: <input type="text" name="name" required placeholder="Name"></label><br>
             <label>Vorname: <input type="text" name="vorname" placeholder="Vorname"></label><br>
+            <label>Name *: <input type="text" name="name" required placeholder="Name"></label><br>
             <label>E-Mail *: <input type="email" name="email" required placeholder="E-Mail"></label><br>
             <label>Klasse: <input type="text" name="klasse" placeholder="Klasse"></label><br>
             <label>Handynummer: <input type="tel" name="handy" placeholder="Handynummer"></label><br>
@@ -43,14 +46,8 @@
             <label>Weitere Informationen: <textarea name="info" placeholder="Informationen"></textarea></label><br>
 
             <label>
-                <div class="additional-places">
-                    <button type="button" id="togglePlaces" class="toggle-places">+ Weitere Orte zum Mitnehmen</button>
-                    <div id="placesForm" class="places-form" style="display: none;">
-                        <label>Ort: <input type="text" name="weiterer_ort[]" placeholder="Ort"></label><br>
-                        <label>PLZ: <input type="number" name="weiterer_plz[]" placeholder="PLZ"></label><br>
-                        <button class="hinzufuegen_button" type="button" id="addPlace">Hinzufügen</button>
-                    </div>
-                </div>
+                <button type="button" id="togglePlaces" class="toggle-places">+ Weitere Orte zum Mitnehmen</button>
+                <div id="map"></div>
             </label>
             <br>
             <button id="anbieten" class="anbieten_button" type="submit">Mitfahrgelegenheit anbieten</button>
@@ -108,5 +105,9 @@
 
 </script>
 <script src="script.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+<script>javascript:loadMapInForm()</script>
 </body>
 </html>

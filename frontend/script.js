@@ -44,3 +44,33 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
         alert('Verbindungsfehler: ' + error.message);
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const offerForm = document.getElementById('offerForm');
+    if (offerForm) {
+        offerForm.addEventListener('submit', handleOfferFormSubmit);
+    }
+});
+
+var map;
+
+// handle interactive map to add new locations on the way
+function loadMapInForm() {
+    map = L.map('map').setView([50.527724, 12.402964], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    var marker = L.marker([50.527724, 12.402964]).addTo(map);
+    marker.bindPopup("<b>BSZ Rodewisch</b>")
+    map.on('click', onMapClick)
+}
+
+function onMapClick(e) {
+    // L.popup()
+    //     .setLatLng(e.latlng)
+    //     .setContent("Punkt auf dem Weg")
+    //     .openOn(L.map('map'));
+    marker = L.marker(e.latlng).addTo(map);
+    marker.bindPopup("Punkt auf dem Weg").openPopup();
+}
