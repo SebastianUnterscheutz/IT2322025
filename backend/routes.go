@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	rand2 "math/rand"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"regexp"
