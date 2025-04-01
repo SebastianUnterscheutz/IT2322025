@@ -44,7 +44,9 @@ type OfferLocations struct {
 // Globale Datenbankverbindung
 var dbCon *sql.DB
 
-// createOffer verarbeitet eine POST-Anfrage, um ein Angebot zu erstellen
+// createOffer handles requests to create a new offer and insert data into the database.
+// It validates the input, including required fields, email format, and date constraints.
+// The function also processes and inserts related location data and returns a success message upon completion.
 func createOffer(w http.ResponseWriter, r *http.Request) {
 	// Nur POST-Anfragen zulassen
 	if r.Method != http.MethodPost {
@@ -99,6 +101,27 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if offer.OfferLocations == nil {
+		fmt.Println("No locations provided")
+		http.Error(w, "No locations provided", http.StatusBadRequest)
+		return
+	}
+
+	for lid, location := range offer.OfferLocations {
+		address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
+		lat, lng, err := getCoordinates(address)
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			http.Error(w, "Could not get coordinates", http.StatusInternalServerError)
+			return
+		} else {
+			fmt.Printf("Latitude: %f, Longitude: %f\n", lat, lng)
+		}
+
+		offer.OfferLocations[lid].Latitude = lat
+		offer.OfferLocations[lid].Longitude = lng
+	}
+
 	// Prepared Statement für die Datenbankeintragung
 	query := `
 		INSERT INTO rides (
@@ -145,32 +168,12 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	defer stmt.Close()
 
-	if offer.OfferLocations == nil {
-		fmt.Println("No locations provided")
-		http.Error(w, "No locations provided", http.StatusBadRequest)
-		return
-	}
-
 	for _, location := range offer.OfferLocations {
-
-		// Example usage
-		address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
-		lat, lng, err := getCoordinates(address)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			http.Error(w, "Could not get coordinates", http.StatusInternalServerError)
-			return
-		} else {
-			fmt.Printf("Latitude: %f, Longitude: %f\n", lat, lng)
-		}
 
 		insertLocationSQL := `
 			INSERT INTO locations_on_the_way (
 			rides_id, plz, city, street, house_number, latitude, longitude
 			) VALUES (?, ?, ?, ?, ?, ?, ?)`
-
-		location.Latitude = lat
-		location.Longitude = lng
 
 		stmtLocation, err := dbCon.Prepare(insertLocationSQL)
 
