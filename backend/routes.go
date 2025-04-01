@@ -220,17 +220,33 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Beispiel-Datenstruktur
-	exampleData := map[string]string{
-		"message": "Hello, world!",
-		"status":  "success",
+	// Abfrage der Koordinaten aus der Datenbank
+	query := "SELECT plz, city, street, house_number, latitude, longitude FROM locations_on_the_way"
+	rows, err := dbCon.Query(query)
+	if err != nil {
+		http.Error(w, "Could not query locations", http.StatusInternalServerError)
+		log.Printf("Error querying locations: %v", err)
+		return
+	}
+	defer rows.Close()
+
+	// Sammlung der Koordinaten
+	locations := []OfferLocations{}
+	for rows.Next() {
+		var location OfferLocations
+		if err := rows.Scan(&location.PLZ, &location.City, &location.Street, &location.HouseNumber, &location.Latitude, &location.Longitude); err != nil {
+			http.Error(w, "Could not scan location data", http.StatusInternalServerError)
+			log.Printf("Error scanning row: %v", err)
+			return
+		}
+		locations = append(locations, location)
 	}
 
 	// Setze den Content-Typ auf JSON
 	w.Header().Set("Content-Type", "application/json")
 
-	// Wandle die Datenstruktur in JSON um und sende sie
-	if err := json.NewEncoder(w).Encode(exampleData); err != nil {
+	// Wandle die gesammelten Orte in JSON um und sende sie
+	if err := json.NewEncoder(w).Encode(locations); err != nil {
 		http.Error(w, "Could not encode JSON", http.StatusInternalServerError)
 		return
 	}
