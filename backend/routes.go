@@ -225,12 +225,15 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func randomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	seededRand := rand2.Rand{}
-	result := make([]byte, length)
+func randomString(n int) string {
+	if n <= 0 {
+		panic("randomString: length must be greater than 0")
+	}
+
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	result := make([]byte, n)
 	for i := range result {
-		result[i] = charset[seededRand.Intn(len(charset))]
+		result[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(result)
 }
