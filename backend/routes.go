@@ -282,5 +282,7 @@ func getCoordinates(address string) (float64, float64, error) {
 		return 0, 0, fmt.Errorf("failed to parse longitude: %w", err)
 	}
 
+	fmt.Println(lat, lon)
+
 	return lat, lon, nil
 }
