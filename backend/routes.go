@@ -221,7 +221,7 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Abfrage der Koordinaten aus der Datenbank
-	query := "SELECT plz, city, street, house_number, latitude, longitude FROM locations_on_the_way"
+	query := "SELECT id, rides_id, plz, city, street, house_number, latitude, longitude FROM locations_on_the_way"
 	rows, err := dbCon.Query(query)
 	if err != nil {
 		http.Error(w, "Could not query locations", http.StatusInternalServerError)
@@ -232,6 +232,25 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 
 	// Sammlung der Koordinaten
 	locations := []OfferLocations{}
+	for rows.Next() {
+		var location OfferLocations
+		// Include fields for id and ride_id
+		if err := rows.Scan(
+			&location.ID,
+			&location.RidesID,
+			&location.PLZ,
+			&location.City,
+			&location.Street,
+			&location.HouseNumber,
+			&location.Latitude,
+			&location.Longitude,
+		); err != nil {
+			http.Error(w, "Could not scan location data", http.StatusInternalServerError)
+			log.Printf("Error scanning row: %v", err)
+			return
+		}
+		locations = append(locations, location)
+	}
 	for rows.Next() {
 		var location OfferLocations
 		if err := rows.Scan(&location.PLZ, &location.City, &location.Street, &location.HouseNumber, &location.Latitude, &location.Longitude); err != nil {
