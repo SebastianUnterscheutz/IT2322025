@@ -158,6 +158,8 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		lat, lng, err := getCoordinates(address)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
+			http.Error(w, "Could not get coordinates", http.StatusInternalServerError)
+			return
 		} else {
 			fmt.Printf("Latitude: %f, Longitude: %f\n", lat, lng)
 		}
