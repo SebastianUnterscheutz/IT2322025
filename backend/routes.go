@@ -145,6 +145,12 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	defer stmt.Close()
 
+	if offer.OfferLocations == nil {
+		fmt.Println("No locations provided")
+		http.Error(w, "No locations provided", http.StatusBadRequest)
+		return
+	}
+
 	for _, location := range offer.OfferLocations {
 
 		// Example usage
