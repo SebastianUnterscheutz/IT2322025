@@ -56,53 +56,11 @@
     </div>
 </div>
 <script>
-    // Aufklappen/Zu klappen des zusätzlichen Formulars
-    document.getElementById('togglePlaces').addEventListener('click', function () {
-        var placesForm = document.getElementById('placesForm');
-        if (placesForm.style.display === 'none') {
-            placesForm.style.display = 'block';
-        } else {
-            placesForm.style.display = 'none';
-        }
-    });
-
-    // Hinzufügen eines neuen Orts
-    document.getElementById('addPlace').addEventListener('click', function () {
-        var ort = document.querySelector('input[name="weiterer_ort[]"]').value;
-        var plz = document.querySelector('input[name="weiterer_plz[]"]').value;
-
-        if (ort && plz) {
-            var ortInput = document.createElement('input');
-            ortInput.type = 'text';
-            ortInput.name = 'ort[]';
-            ortInput.value = ort;
-            ortInput.readOnly = true;
-
-            var plzInput = document.createElement('input');
-            plzInput.type = 'number';
-            plzInput.name = 'plz[]';
-            plzInput.value = plz;
-            plzInput.readOnly = true;
-
-            var additionalPlaces = document.createElement('div');
-            additionalPlaces.appendChild(ortInput);
-            additionalPlaces.appendChild(plzInput);
-
-            document.querySelector('#offerForm').insertBefore(additionalPlaces, document.querySelector('.anbieten_button'));
-
-            document.querySelector('input[name="weiterer_ort[]"]').value = '';
-            document.querySelector('input[name="weiterer_plz[]"]').value = '';
-            document.getElementById('placesForm').style.display = 'none';
-        } else {
-            alert('Bitte Ort und PLZ eingeben.');
-        }
-    });
-
-    // Daten senden
     document.getElementById('offerForm').addEventListener('submit', function (event) {
         event.preventDefault();
-
         var formData = new FormData(event.target);
+
+        // Behalte die JSON-Reihenfolge durch Definition der Objektdaten in der gewünschten Reihenfolge
         var data = {
             name: formData.get('name'),
             first_name: formData.get('vorname'),
@@ -112,30 +70,33 @@
             valid_from: formData.get('gueltig_von'),
             valid_until: formData.get('gueltig_bis'),
             additional_information: formData.get('info'),
-            offer_locations: []
+            other: "Zusätzliche Angaben", // Optional, falls benötigt
+            offer_locations: [] // Orte werden hier eingefügt
         };
 
+        // Orte sammeln
         var locations = document.querySelectorAll('[name^="ort"], [name^="plz"]');
         for (var i = 0; i < locations.length; i += 2) {
             data.offer_locations.push({
                 plz: locations[i + 1].value,
                 city: locations[i].value,
-                street: formData.get('strasse'),
-                house_number: formData.get('hausnummer')
+                street: formData.get('strasse') || "", // Sicherstellen, dass Straßeninformationen leer sein können
+                house_number: formData.get('hausnummer') || "" // Sicherstellen, dass Hausnummern leer sein können
             });
         }
 
+        // Daten an das Backend senden
         fetch('https://it232.zbcs.eu/api/create/offer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data) // JSON in der exakten Reihenfolge wie definiert
         }).then(response => {
             if (response.ok) {
-                alert('Angebot erfolgreich erstellt.' + data);
+                alert('Angebot erfolgreich erstellt.');
             } else {
-                alert('Fehler beim Erstellen des Angebots.'+ data);
+                alert('Fehler beim Erstellen des Angebots.');
             }
         }).catch(error => {
             alert('Verbindungsfehler: ' + error.message);
