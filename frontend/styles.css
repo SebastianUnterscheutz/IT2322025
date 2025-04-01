@@ -1,36 +1,196 @@
-/* Stil für die Überschrift */
+#map {
+    height: 80vh;
+    display: flex;
+    margin-right: 10px;
+}
 
-.formfeld {
+.second_title {
+    font-size: 1em;
+    font-weight: bold;
+}
+body {
+    font-family: Arial, sans-serif;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #202b36;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-right: 20px;
+}
+
+.title h1 {
+    margin: 0;
+    font-size: 24px;
+}
+.menu {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+.menu a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+.menu a:hover {
+    background-color: #1a252f;
+}
+
+.header {
+    position: sticky;
+    background-color: #2c3e50;
+    padding: 15px 25px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-    font-size: 4.5em; /* Größe der Schrift */
-    margin-top: 50px; /* Abstand nach oben */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-h1 {
-    font-size: x-large;
+.text {
+    background-color: #2c3e50;
+    padding: 15px 5px 15px 5px;
+    text-align: center;
+    align-items: center;
+    color: white;
 }
 
-.grid_block_2 {
-    display:grid;
-    grid-template-columns: 8% 8% 32% 31% 8% 8% ;
-    grid-template-rows: auto;
-    grid-gap: 0.8rem;
-    margin-left:5%;
-    margin-right:5%;
+.theme_title {
+    text-align: center;
+    color: white;
+}
+
+.handbuch_schrift {
+    color:white;
+}
+.form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+    grid-area: form; /* Das Formular in der Grid-Position 'form' platzieren */
+    margin: 0 auto;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form > form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Zwei Felder nebeneinander */
+.form > form label {
+    flex: 1 1 calc(50% - 7.5px); /* Flexibel und gleichmäßig */
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Absenden-Button */
+.anbieten_button {
+    background-color: #2c3e50;
+    color: #fff;
+    border: none;
+    padding: 15px 0;
+    border-radius: 5px;
+    font-size: 18px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.anbieten_button:hover {
+    background-color: #0056b3;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
-    '. . ueberschriften ueberschriften . .'
-    '. liste1 liste1 liste1 liste1 .'
-	'. liste1 liste1 liste1 liste1 .'
-	'. liste1 liste1 liste1 liste1 .'
-    '. liste1 liste1 liste1 liste1 .'
-	'. . liste2 liste2 . .'
-    '. . zeiten zeiten . .'
+        "header header"
+        "map text"
+        "bottom bottom";
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.nummer1 { grid-area: foto1; }
-.nummer2 { grid-area: zeiten;}
-.nummer3 { grid-area: ueberschriften; }
-.nummer4 { grid-area: liste1; }
-.nummer5 { grid-area: liste2; }
-.nummer6 { grid-area: foto2; }
-.nummer7 { grid-area: foto3; }
+.anbieten_container {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "header header"
+        "theme_title theme_title"
+        "form form"
+        "bottom bottom"
+        ;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.handbuch_container {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "header"
+        "handbuch_schrift"
+;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header { grid-area: header; }
+.title { grid-area: title; }
+.menu { grid-area: menu; }
+#map { grid-area: map; }
+.text { grid-area: text; }
+.bottom { grid-area: bottom; }
+.theme_title { grid-area: theme_title; }

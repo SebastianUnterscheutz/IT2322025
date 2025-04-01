@@ -7,24 +7,42 @@
     <title>Mitfahrangebot</title>
 </head>
 <body>
-    <h1>Mitfahrangebot</h1>
-    <div class="formfeld">
-        <form action="#" method="POST">
-            <label for="plz">Postleitzahl:</label>
-            <input type="text" id="plz" name="plz" required placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
-            <br><br>
+<div class="anbieten_container">
+    <div class="header">
+        <div>
+            <a href="index.html">
+                <img class="logo" src="photos/logo.png" alt="Logo" width="60" height="60">
+            </a>
+        </div>
+        <div class="title">
+            <h1>Fahrgemeinschaften BSZ Vogtland</h1>
+        </div>
+        <div class="menu">
+            <a href="mitfahren_suchen.html">Mitfahrgelegenheiten suchen</a>
+            <a href="mitfahren_anbieten.html">Mitfahrgelegenheit anbieten</a>
+            <a href="mitfahrmoeglichkeiten_liste.html">Liste der Mitfahrmöglichkeiten</a>
+            <a href="software_handbuch.html">Handbuch der Software</a>
+        </div>
+    </div>
+    <div class="theme_title">
+        <h2>Mitfahrangebot</h2>
+    </div>
 
-            <label for="ort">Ort:</label>
+    <div class="form">
+        <form action="#" method="POST">
+            <label for="plz">Postleitzahl *:</label>
+            <input type="text" id="plz" name="plz" required placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
+
+            <label for="ort">Ort *:</label>
             <input type="text" id="ort" name="ort" required placeholder="Ort eingeben">
-            <br><br>
 
             <label for="radius">Umkreis:</label>
             <input type="text" id="radius" name="radius" required placeholder="Radius eingeben">
-            <br><br>
 
-            <input type="submit" value="Absenden">
+            <input class="anbieten_button" type="submit" value="Absenden">
         </form>
     </div>
+</div>
 </body>
 
 </html>
