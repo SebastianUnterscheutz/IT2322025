@@ -25,7 +25,6 @@ func Init() *sql.DB {
 	if err != nil {
 		log.Fatalf("Could not connect to the database: %v\n", err)
 	}
-	defer db.Close()
 
 	// Teste die Verbindung
 	err = db.Ping()
