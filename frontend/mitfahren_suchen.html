@@ -30,64 +30,83 @@
 
     <div class="form">
         <form id="searchForm">
-            <label for="plz">Postleitzahl *:</label>
+            <label for="plz">Postleitzahl:</label>
             <input type="text" id="plz" name="plz" placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
 
-            <label for="ort">Ort *:</label>
+            <label for="ort">Ort:</label>
             <input type="text" id="ort" name="ort" placeholder="Ort eingeben">
 
-            <input class="anbieten_button" type="button" id="searchButton" value="Suchen">
+            <!-- Keine Buttons mehr nötig, da Suche automatisch erfolgt -->
         </form>
     </div>
 
     <div id="results">
-        <!-- Hier werden Suchergebnisse angezeigt -->
+        <!-- Suchergebnisse werden hier eingefügt -->
     </div>
+
 </div>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchButton = document.getElementById('searchButton');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Referenzen für Eingabefelder und Ergebnisbereich
+        const plzField = document.getElementById('plz');
+        const ortField = document.getElementById('ort');
         const resultsDiv = document.getElementById('results');
 
-        // Event-Listener für den Suchbutton
-        searchButton.addEventListener('click', function() {
-            const plz = document.getElementById('plz').value;
-            const ort = document.getElementById('ort').value;
+        // Funktion: Anfrage an die Such-API
+        const fetchSearchResults = () => {
+            const plz = plzField.value;
+            const ort = ortField.value;
 
-            // API-Aufruf mit Fetch
-            fetch(`/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`)
+            // API-Endpoint für die Suche
+            const url = `/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`;
+
+            // Fetch-Aufruf zur API
+            fetch(url)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error('Netzwerkfehler: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
                     // Ergebnisse anzeigen
-                    resultsDiv.innerHTML = '';
-                    if (data.length === 0) {
-                        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
-                        return;
-                    }
-
-                    // Ergebnisse dynamisch generieren
-                    data.forEach(offer => {
-                        const offerDiv = document.createElement('div');
-                        offerDiv.className = 'offer';
-                        offerDiv.innerHTML = `
-                            <h3>${offer.ride.name} (${offer.plz} - ${offer.city})</h3>
-                            <p>Strasse: ${offer.street} ${offer.house_number}</p>
-                            <p>Von: ${offer.ride.valid_from} Bis: ${offer.ride.valid_until}</p>
-                            <p>Details: ${offer.ride.additional_information}</p>
-                        `;
-                        resultsDiv.appendChild(offerDiv);
-                    });
+                    displayResults(data);
                 })
                 .catch(error => {
-                    console.error('Fetch error:', error);
-                    resultsDiv.innerHTML = '<p>Fehler beim Laden der Ergebnisse. Bitte versuchen Sie es erneut.</p>';
+                    console.error('Fehler:', error);
+                    resultsDiv.innerHTML = '<p>Fehler beim Abrufen der Daten.</p>';
                 });
+        };
+
+        // Funktion: Ergebnisse in den DOM einfügen
+        const displayResults = (data) => {
+            resultsDiv.innerHTML = ''; // Alte Ergebnisse löschen
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
+                return;
+            }
+
+            // Ergebnisse dynamisch erstellen
+            data.forEach(offer => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'offer';
+                resultDiv.innerHTML = `
+                    <h3>${offer.ride.name} (${offer.plz}, ${offer.city})</h3>
+                    <p>${offer.street} ${offer.house_number}</p>
+                    <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
+                    <p>Informationen: ${offer.ride.additional_information}</p>
+                `;
+                resultsDiv.appendChild(resultDiv);
+            });
+        };
+
+        // Event-Listener für die Eingabe in die Felder
+        [plzField, ortField].forEach(field => {
+            field.addEventListener('keyup', () => {
+                fetchSearchResults(); // Suche durchführen bei jedem Tipp
+            });
         });
     });
 </script>
