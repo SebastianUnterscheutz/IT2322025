@@ -96,7 +96,7 @@ func getAdressFromCoordinates(lat, lon float64) (string, string, error) {
 	var data struct {
 		Address struct {
 			Postcode string `json:"postcode"`
-			City     string `json:"city"`
+			City     string `json:"town"`
 		} `json:"address"`
 	}
 	bodyBytes, _ := io.ReadAll(resp.Body)
