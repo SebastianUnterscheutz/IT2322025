@@ -238,52 +238,50 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Abfrage der Koordinaten aus der Datenbank
-	query := "SELECT id, rides_id, plz, city, street, house_number, latitude, longitude FROM locations_on_the_way"
+	// Abfrage der Daten aus den Tabellen locations_on_the_way und rides
+	query := `
+	SELECT 
+		l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude,
+		r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
+		r.additional_information, r.other, r.token, r.activated
+	FROM locations_on_the_way l
+	JOIN rides r ON l.rides_id = r.id
+	`
 	rows, err := dbCon.Query(query)
 	if err != nil {
-		http.Error(w, "Could not query locations", http.StatusInternalServerError)
-		log.Printf("Error querying locations: %v", err)
+		http.Error(w, "Could not query locations and rides", http.StatusInternalServerError)
+		log.Printf("Error querying locations and rides: %v", err)
 		return
 	}
 	defer rows.Close()
 
-	// Sammlung der Koordinaten
-	locations := []OfferLocations{}
-	for rows.Next() {
-		var location OfferLocations
-		// Include fields for id and ride_id
-		if err := rows.Scan(
-			&location.ID,
-			&location.RidesID,
-			&location.PLZ,
-			&location.City,
-			&location.Street,
-			&location.HouseNumber,
-			&location.Latitude,
-			&location.Longitude,
-		); err != nil {
-			http.Error(w, "Could not scan location data", http.StatusInternalServerError)
-			log.Printf("Error scanning row: %v", err)
-			return
-		}
-		locations = append(locations, location)
+	// Struktur, die sowohl Locations als auch die zugehörigen Ride-Informationen enthält
+	type LocationWithRide struct {
+		OfferLocations
+		Ride Offer `json:"ride"`
 	}
+
+	locationsWithRides := []LocationWithRide{}
 	for rows.Next() {
-		var location OfferLocations
-		if err := rows.Scan(&location.PLZ, &location.City, &location.Street, &location.HouseNumber, &location.Latitude, &location.Longitude); err != nil {
-			http.Error(w, "Could not scan location data", http.StatusInternalServerError)
+		var location LocationWithRide
+		if err := rows.Scan(
+			&location.ID, &location.RidesID, &location.PLZ, &location.City, &location.Street, &location.HouseNumber,
+			&location.Latitude, &location.Longitude, &location.Ride.Name, &location.Ride.FirstName, &location.Ride.Email,
+			&location.Ride.Class, &location.Ride.PhoneNumber, &location.Ride.ValidFrom, &location.Ride.ValidUntil,
+			&location.Ride.AdditionalInformation, &location.Ride.Other, &location.Ride.Token, &location.Ride.Activated,
+		); err != nil {
+			http.Error(w, "Could not scan location and ride data", http.StatusInternalServerError)
 			log.Printf("Error scanning row: %v", err)
 			return
 		}
-		locations = append(locations, location)
+		locationsWithRides = append(locationsWithRides, location)
 	}
 
 	// Setze den Content-Typ auf JSON
 	w.Header().Set("Content-Type", "application/json")
 
-	// Wandle die gesammelten Orte in JSON um und sende sie
-	if err := json.NewEncoder(w).Encode(locations); err != nil {
+	// Wandle die gesammelten Daten in JSON um und sende sie
+	if err := json.NewEncoder(w).Encode(locationsWithRides); err != nil {
 		http.Error(w, "Could not encode JSON", http.StatusInternalServerError)
 		return
 	}
