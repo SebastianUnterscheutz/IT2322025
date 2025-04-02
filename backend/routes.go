@@ -269,17 +269,9 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error scanning row: %v", err)
 			return
 		}
-		timeNOW := time.Now()
-		validUntil, err := time.Parse("2006-01-02", location.Ride.ValidUntil)
-		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Invalid date format", http.StatusBadRequest)
-			return
-		}
 
-		if timeNOW.After(validUntil) {
-			locationsWithRides = append(locationsWithRides, location)
-		}
+		locationsWithRides = append(locationsWithRides, location)
+
 	}
 
 	// Setze den Content-Typ auf JSON
@@ -364,19 +356,8 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 		// Füge das Angebot zur Location hinzu
 		location.Ride = &ride
 
-		timeNOW := time.Now()
-		validUntil, err := time.Parse("2006-01-02", location.Ride.ValidUntil)
-		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Invalid date format", http.StatusBadRequest)
-			return
-		}
+		results = append(results, location)
 
-		fmt.Println(validUntil)
-		fmt.Println(timeNOW)
-		if validUntil.After(timeNOW) {
-			results = append(results, location)
-		}
 	}
 
 	// Ergebnisse als JSON ausgeben
