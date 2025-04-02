@@ -22,6 +22,8 @@ func main() {
 	http.HandleFunc("/api/create/offer", createOffer)
 	http.HandleFunc("/api/get/offers", getOffer)
 	http.HandleFunc("/api/search/offers", searchOffers)
+	http.HandleFunc("/api/edit/offer", editOffer)
+	http.HandleFunc("/api/activate/offer", activateOffer)
 
 	// Starte den Server
 	log.Println("Starting server on :3000")

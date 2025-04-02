@@ -362,3 +362,70 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Fehler bei der Ausgabe der Ergebnisse", http.StatusInternalServerError)
 	}
 }
+
+func editOffer(w http.ResponseWriter, r *http.Request) {
+	// Unterstützt nur GET und POST
+	if r.Method == http.MethodGet {
+		token := r.URL.Query().Get("token")
+		if token == "" {
+			http.Error(w, "Token is missing", http.StatusBadRequest)
+			return
+		}
+
+		// Eintrag abrufen
+		var offer Offer
+		err := dbCon.QueryRow("SELECT name, first_name, email, class, phone_number, valid_from, valid_until, additional_information FROM offers WHERE token = ?", token).Scan(
+			&offer.Name, &offer.FirstName, &offer.Email, &offer.Class, &offer.PhoneNumber, &offer.ValidFrom, &offer.ValidUntil, &offer.AdditionalInformation,
+		)
+		if err != nil {
+			http.Error(w, "Offer not found", http.StatusNotFound)
+			return
+		}
+
+		// JSON-Antwort mit den Angebotsdaten
+		json.NewEncoder(w).Encode(offer)
+		return
+	} else if r.Method == http.MethodPost {
+		var offer Offer
+		if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
+			http.Error(w, "Invalid input data", http.StatusBadRequest)
+			return
+		}
+
+		// Eingabe validieren
+		if offer.Name == "" || offer.Email == "" || !isValidEmail(offer.Email) {
+			http.Error(w, "Invalid input data", http.StatusBadRequest)
+			return
+		}
+
+		// Angebot aktualisieren
+		_, err := dbCon.Exec("UPDATE offers SET name = ?, first_name = ?, email = ?, class = ?, phone_number = ?, valid_from = ?, valid_until = ?, additional_information = ? WHERE token = ?",
+			offer.Name, offer.FirstName, offer.Email, offer.Class, offer.PhoneNumber, offer.ValidFrom, offer.ValidUntil, offer.AdditionalInformation, offer.Token)
+		if err != nil {
+			http.Error(w, "Failed to update offer", http.StatusInternalServerError)
+			return
+		}
+
+		w.Write([]byte("Offer updated successfully"))
+		return
+	}
+
+	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+}
+
+func activateOffer(w http.ResponseWriter, r *http.Request) {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		http.Error(w, "Token is missing", http.StatusBadRequest)
+		return
+	}
+
+	// Eintrag aktivieren
+	_, err := dbCon.Exec("UPDATE offers SET activated = TRUE WHERE token = ?", token)
+	if err != nil {
+		http.Error(w, "Failed to activate offer", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte("Offer activated successfully"))
+}

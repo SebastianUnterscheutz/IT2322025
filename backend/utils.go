@@ -6,7 +6,9 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"net/smtp"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 )
@@ -137,4 +139,29 @@ func isValidEmail(email string) bool {
 
 	// Validiert eine E-Mail-Adresse anhand von Regex
 	return validEmailRegex.MatchString(email)
+}
+
+func sendActivationEmail(email, token string) error {
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPass := os.Getenv("SMTP_PASS")
+
+	from := smtpUser
+	to := []string{email}
+	subject := "Aktiviere Dein Angebot"
+	body := fmt.Sprintf("Hallo,\n\nbitte aktiviere Dein Angebot über folgenden Link:\n\nhttp://localhost:3000/api/activate/offer?token=%s\n\nDanke!", token)
+
+	msg := []byte("From: " + from + "\n" +
+		"To: " + email + "\n" +
+		"Subject: " + subject + "\n\n" +
+		body)
+
+	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, msg)
+	if err != nil {
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+
+	return nil
 }
