@@ -75,7 +75,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate phone number length (e.g., you can adjust as per your system's requirement)
-	if len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15 {
+	if len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15 || offer.PhoneNumber == "" {
 		http.Error(w, "Invalid phone number", http.StatusBadRequest)
 		return
 	}
