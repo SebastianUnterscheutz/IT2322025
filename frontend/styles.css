@@ -220,11 +220,14 @@ textarea {
 
 /*schauen wo es her kommt*/
 .offer {
+    width: 100%;
+    max-width: 1000px;
     border: 1px solid #ccc;
     padding: 15px;
     margin: 10px 0;
     border-radius: 5px;
     background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .offer h3 {
@@ -238,7 +241,12 @@ textarea {
 }
 
 #results {
-    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    grid-area: results;
 }
 
 /* Styles für den Karten-Container */
