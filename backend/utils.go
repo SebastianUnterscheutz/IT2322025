@@ -150,7 +150,7 @@ func sendActivationEmail(email, token string) error {
 	from := smtpUser
 	to := []string{email}
 	subject := "Aktiviere Dein Angebot"
-	body := fmt.Sprintf("Hallo,\n\nbitte aktiviere Dein Angebot über folgenden Link:\n\nhttp://localhost:3000/api/activate/offer?token=%s\n\nDanke!", token)
+	body := fmt.Sprintf("Hallo,\n\nbitte aktiviere Dein Angebot über folgenden Link:\n\nhttps://it232.zbcs.eu/api/activate/offer?token=%s\n\nDanke!", token)
 
 	msg := []byte("From: " + from + "\n" +
 		"To: " + email + "\n" +
