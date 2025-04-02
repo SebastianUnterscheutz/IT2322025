@@ -20,8 +20,8 @@ type Offer struct {
 	Email                 string           `json:"email"`
 	Class                 string           `json:"class"`
 	PhoneNumber           string           `json:"phone_number"`
-	ValidFrom             time.Time        `json:"valid_from"`
-	ValidUntil            time.Time        `json:"valid_until"`
+	ValidFrom             string           `json:"valid_from"`
+	ValidUntil            string           `json:"valid_until"`
 	AdditionalInformation string           `json:"additional_information"`
 	Other                 string           `json:"other"`
 	Token                 string           `json:"token"`
@@ -93,14 +93,28 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	validFrom, err := time.Parse("2006-01-02", offer.ValidFrom)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		return
+	}
+
+	validUntil, err := time.Parse("2006-01-02", offer.ValidFrom)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		return
+	}
+
 	// Validate 'ValidFrom' and 'ValidUntil' fields
-	if offer.ValidFrom.IsZero() || offer.ValidUntil.IsZero() {
+	if validFrom.IsZero() || validFrom.IsZero() {
 		http.Error(w, "Both valid_from and valid_until must be provided", http.StatusBadRequest)
 		return
 	}
 
 	// Ensure 'ValidFrom' is before 'ValidUntil'
-	if !offer.ValidFrom.Before(offer.ValidUntil) {
+	if !validFrom.Before(validUntil) {
 		http.Error(w, "valid_from must be before valid_until", http.StatusBadRequest)
 		return
 	}
@@ -150,8 +164,8 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		offer.Email,
 		offer.Class,
 		offer.PhoneNumber,
-		offer.ValidFrom,
-		offer.ValidUntil,
+		validFrom,
+		validUntil,
 		offer.AdditionalInformation,
 		offer.Other,
 		offer.Token,
