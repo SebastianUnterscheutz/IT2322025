@@ -32,11 +32,9 @@
 
     <div class="form">
         <form id="searchForm">
-            <label for="plz">Postleitzahl:</label>
-            <input type="number" id="plz" name="plz" placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
+            <label for="plz">Ort oder Postleitzahl:</label>
+            <input type="number" id="plz" name="plz" placeholder="Ort oder Postleitzahl:" pattern="\d{5}" title="Fünfstellige Postleitzahl">
 
-            <label for="ort">Ort:</label>
-            <input type="text" id="ort" name="ort" placeholder="Ort eingeben">
 
             <!-- Keine Buttons mehr nötig, da Suche automatisch erfolgt -->
         </form>
@@ -67,7 +65,7 @@
 
         // Referenzen für Eingabefelder
         const plzField = document.getElementById('plz');
-        const ortField = document.getElementById('ort');
+        const ortField = document.getElementById('plz');
         const resultsDiv = document.getElementById('results');
 
         // Layer-Gruppe: Alle Marker zur Karte hinzufügen
