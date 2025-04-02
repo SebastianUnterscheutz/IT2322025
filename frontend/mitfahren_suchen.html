@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>Mitfahrangebot</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-q6NdBFhuF9ToMdntNsEMIeh+ufykLbDs4JBR6iPvc+o=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-wewbHF5jiiiZwmusu7u+woaZRVJs4WVlZIa1P4Etdxo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"  crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
 <div class="anbieten_container">
@@ -40,9 +40,10 @@
 
             <!-- Keine Buttons mehr nötig, da Suche automatisch erfolgt -->
         </form>
-    </div>
 
-    <div id="map" style="height: 500px; width: 100%;"></div>
+        <div id="map"></div>
+
+    </div>
 
     <div id="results">
         <!-- Suchergebnisse werden hier eingefügt -->
@@ -51,9 +52,9 @@
 </div>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
         // Definiere den Mittelpunkt der Karte (z.B. auf eine festgelegte Stadt zentrieren)
-        const mapCenter = [51.6668, 11.4759]; // Koordinaten von Hettstedt
+        const mapCenter = [50.527724 ,12.402964]; // Koordinaten von Hettstedt
         const mapZoom = 12; // Anfangszoomstufe
 
         // Initialisiere die Leaflet-Karte
@@ -61,8 +62,8 @@
 
         // Füge die OpenStreetMap-Kacheln hinzu
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
         // Referenzen für Eingabefelder
         const plzField = document.getElementById('plz');
@@ -74,77 +75,77 @@
 
         // Funktion: Pins von der API laden
         const fetchSearchResults = () => {
-            const plz = plzField.value;
-            const ort = ortField.value;
+        const plz = plzField.value;
+        const ort = ortField.value;
 
-            // API-Aufruf
-            const url = `/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`;
+        // API-Aufruf
+        const url = `/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`;
 
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Netzwerkfehler: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Alte Marker entfernen
-                    markerLayer.clearLayers();
+        fetch(url)
+        .then(response => {
+        if (!response.ok) {
+        throw new Error('Netzwerkfehler: ' + response.status);
+    }
+        return response.json();
+    })
+        .then(data => {
+        // Alte Marker entfernen
+        markerLayer.clearLayers();
 
-                    if (data.length === 0) {
-                        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
-                        return;
-                    }
+        if (data.length === 0) {
+        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
+        return;
+    }
 
-                    resultsDiv.innerHTML = ''; // Alte Text-Ergebnisse löschen
+        resultsDiv.innerHTML = ''; // Alte Text-Ergebnisse löschen
 
-                    // Dynamisch Pins zur Karte hinzufügen
-                    data.forEach(offer => {
-                        const lat = offer.latitude;
-                        const lng = offer.longitude;
+        // Dynamisch Pins zur Karte hinzufügen
+        data.forEach(offer => {
+        const lat = offer.latitude;
+        const lng = offer.longitude;
 
-                        // Marker hinzufügen
-                        const marker = L.marker([lat, lng]).addTo(markerLayer);
+        // Marker hinzufügen
+        const marker = L.marker([lat, lng]).addTo(markerLayer);
 
-                        // Popup mit Angebotsdetails
-                        marker.bindPopup(`
+        // Popup mit Angebotsdetails
+        marker.bindPopup(`
                             <h3>${offer.ride.name} (${offer.plz})</h3>
                             <p>${offer.street} ${offer.house_number}</p>
                             <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
                             <p>Details: ${offer.ride.additional_information}</p>
                         `);
 
-                        // Text-Ergebnisse erzeugen
-                        const resultDiv = document.createElement('div');
-                        resultDiv.className = 'offer';
-                        resultDiv.innerHTML = `
+        // Text-Ergebnisse erzeugen
+        const resultDiv = document.createElement('div');
+        resultDiv.className = 'offer';
+        resultDiv.innerHTML = `
                             <h3>${offer.ride.name} (${offer.plz})</h3>
                             <p>${offer.street} ${offer.house_number}</p>
                             <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
                         `;
-                        resultsDiv.appendChild(resultDiv);
-                    });
+        resultsDiv.appendChild(resultDiv);
+    });
 
-                    // Karte automatisch auf Marker zentrieren (wenn Ergebnisse vorhanden)
-                    if (data.length > 0) {
-                        const bounds = markerLayer.getBounds();
-                        map.fitBounds(bounds, {
-                            padding: [50, 50]
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Fehler:', error);
-                    resultsDiv.innerHTML = '<p>Fehler beim Abrufen der Daten.</p>';
-                });
-        };
+        // Karte automatisch auf Marker zentrieren (wenn Ergebnisse vorhanden)
+        if (data.length > 0) {
+        const bounds = markerLayer.getBounds();
+        map.fitBounds(bounds, {
+        padding: [50, 50]
+    });
+    }
+    })
+        .catch(error => {
+        console.error('Fehler:', error);
+        resultsDiv.innerHTML = '<p>Fehler beim Abrufen der Daten.</p>';
+    });
+    };
 
         // Event-Listener: Suche bei Eingabe
         [plzField, ortField].forEach(field => {
-            field.addEventListener('keyup', () => {
-                fetchSearchResults();
-            });
-        });
+        field.addEventListener('keyup', () => {
+        fetchSearchResults();
+    });
+    });
     });
 </script>
 </html>

@@ -142,6 +142,7 @@ textarea {
     resize: vertical;
 }
 
+/* Absenden-Button */
 .anbieten_button {
     background-color: #2c3e50;
     color: #fff;
@@ -282,6 +283,23 @@ textarea {
 .offer p {
     margin: 5px 0;
     color: #555;
+}
+
+/* Styles für den Karten-Container */
+#map {
+    height: 500px; /* Höhe der Karte */
+    width: 100%; /* Karte nimmt die gesamte Breite ein */
+    margin-top: 20px; /* Abstand über der Karte */
+    border: 1px solid #ccc; /* Dünner Rahmen um die Karte */
+    border-radius: 8px; /* Runde Ecken */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten für einen modernen Look */
+}
+
+/* Dynamische Karte an kleinere Bildschirme anpassen */
+@media (max-width: 768px) {
+    #map {
+        height: 300px; /* Reduzierte Höhe für kleinere Geräte */
+    }
 }
 
 .header { grid-area: header; }

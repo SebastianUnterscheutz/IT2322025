@@ -17,15 +17,11 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
     };
 
     // Orte sammeln
-    var locations = document.querySelectorAll('[name^="ort"], [name^="plz"]');
-    for (var i = 0; i < locations.length; i += 2) {
-        data.offer_locations.push({
-            plz: locations[i + 1].value,
-            city: locations[i].value,
-            street: formData.get('strasse') || "", // Sicherstellen, dass Straßeninformationen leer sein können
-            house_number: formData.get('hausnummer') || "" // Sicherstellen, dass Hausnummern leer sein können
-        });
+    var filteredLocations = locations.filter(item => item !== null);
+    for (var i = 0; i < filteredLocations.length; i++) {
+        data.offer_locations.push(filteredLocations[i]);
     }
+    console.log(data.offer_locations)
 
     // Daten an das Backend senden
     fetch('https://it232.zbcs.eu/api/create/offer', {
@@ -38,12 +34,54 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
         if (response.ok) {
             alert('Angebot erfolgreich erstellt.');
         } else {
-            alert('Fehler beim Erstellen des Angebots.');
+            alert(`
+                Fehler beim Erstellen des Angebots.
+                ${JSON.stringify(response)}`);
         }
+        console.log(response)
     }).catch(error => {
         alert('Verbindungsfehler: ' + error.message);
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const offerForm = document.getElementById('offerForm');
+    if (offerForm) {
+        offerForm.addEventListener('submit', handleOfferFormSubmit);
+    }
+});
 
+var map;
+var locations = [];
+document.markers = [];
 
+// handle interactive map to add new locations on the way
+function loadMapInForm() {
+    map = L.map('map').setView([50.527724, 12.402964], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    var marker = L.marker([50.527724, 12.402964]).addTo(map);
+    marker.bindPopup("<b>BSZ Rodewisch</b>")
+    map.on('click', onMapClick)
+}
+function onMapClick(e) {
+    // Marker auf Karte anzeigen und Button zum Entfernen hinzufügen
+    var marker = L.marker(e.latlng).addTo(map);
+    document.markers.push(marker)
+    marker.bindPopup(`
+        <button type="button" onclick="removeMarker(${document.markers.length-1});">Entfernen</button>
+    `).openPopup();
+    // Ort vorbereiten zum Anschicken
+    locations.push({
+        latitude: e.latlng.lat,
+        longitude: e.latlng.lng
+    })
+}
+
+function removeMarker(index) {
+    // Marker von Karte und Orte Array entfernen
+    map.removeLayer(document.markers[index]);
+    locations[index] = null;
+}
