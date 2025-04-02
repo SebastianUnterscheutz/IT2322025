@@ -4,38 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Angebot bearbeiten</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>Angebot bearbeiten</h1>
-<form id="editForm">
-    <label>Name: <input type="text" id="name" name="name"></label><br>
-    <label>Vorname: <input type="text" id="first_name" name="first_name"></label><br>
-    <label>E-Mail: <input type="email" id="email" name="email"></label><br>
-    <label>Telefon: <input type="text" id="phone_number" name="phone_number"></label><br>
-    <label>Gültig von: <input type="date" id="valid_from" name="valid_from"></label><br>
-    <label>Gültig bis: <input type="date" id="valid_until" name="valid_until"></label><br>
-    <label>Zusätzliche Informationen: <textarea id="additional_information" name="additional_information"></textarea></label><br>
-    <button type="submit">Speichern</button>
-</form>
+<div class="container">
+    <div class="header">
+        <div>
+            <a href="index.html">
+                <img class="logo" src="photos/logo.png" alt="Logo" width="60" height="60">
+            </a>
+        </div>
+        <div class="title">
+            <h1>Fahrgemeinschaften BSZ Vogtland</h1>
+        </div>
+        <div class="menu">
+            <a href="mitfahren_suchen.html">Mitfahrgelegenheiten suchen</a>
+            <a href="mitfahren_anbieten.html">Mitfahrgelegenheit anbieten</a>
+            <a href="mitfahrmoeglichkeiten_liste.html">Liste der Mitfahrmöglichkeiten</a>
+            <a href="software_handbuch.html">Handbuch der Software</a>
+        </div>
+    </div>
+    <div class="theme_title">
+        <h2>Angebot bearbeiten</h2>
+    </div>
+    <div class="form">
+        <form id="editForm" method="post">
+            <label>Name:<br> <input type="text" id="name" name="name" placeholder="Name"></label><br><br>
+            <label>Vorname:<br> <input type="text" id="first_name" name="first_name" placeholder="Vorname"></label><br><br>
+            <label>E-Mail:<br> <input type="email" id="email" name="email" placeholder="E-Mail"></label><br><br>
+            <label>Handynummer:<br> <input type="text" id="phone_number" name="phone_number" placeholder="Telefon"></label><br><br>
+            <label>Gültig von:<br> <input type="date" id="valid_from" name="valid_from"></label><br><br>
+            <label>Gültig bis:<br> <input type="date" id="valid_until" name="valid_until"></label><br><br>
+            <label>Zusätzliche Informationen:<br>
+                <textarea id="additional_information" name="additional_information" placeholder="Zusätzliche Informationen"></textarea>
+            </label><br><br>
+            <button id="anbieten" class="anbieten_button" type="submit">Speichern</button>
+        </form>
+    </div>
+</div>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    window.onload = function() {
+    // Daten abrufen und in das Formular einfügen
+    window.onload = function () {
         fetch(`/api/edit/offer?token=${token}`)
             .then(response => response.json())
             .then(data => {
-                document.getElementById('name').value = data.name;
-                document.getElementById('first_name').value = data.first_name;
-                document.getElementById('email').value = data.email;
-                document.getElementById('phone_number').value = data.phone_number;
-                document.getElementById('valid_from').value = data.valid_from;
-                document.getElementById('valid_until').value = data.valid_until;
-                document.getElementById('additional_information').value = data.additional_information;
+                document.getElementById("name").value = data.name;
+                document.getElementById("first_name").value = data.first_name;
+                document.getElementById("email").value = data.email;
+                document.getElementById("phone_number").value = data.phone_number;
+                document.getElementById("valid_from").value = data.valid_from;
+                document.getElementById("valid_until").value = data.valid_until;
+                document.getElementById("additional_information").value = data.additional_information;
             });
     };
 
-    document.getElementById('editForm').onsubmit = function(e) {
+    // Formular aktualisieren
+    document.getElementById("editForm").onsubmit = function (e) {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
@@ -47,13 +74,15 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
-        }).then(response => {
-            if (response.ok) {
-                alert('Angebot erfolgreich aktualisiert.');
-            } else {
-                alert('Fehler beim Aktualisieren des Angebots.');
-            }
-        });
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Angebot erfolgreich aktualisiert.");
+                    window.location.href = "index.html";
+                } else {
+                    alert("Fehler beim Aktualisieren des Angebots.");
+                }
+            });
     };
 </script>
 </body>
