@@ -56,6 +56,9 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	var offer Offer
 
+	//todo DEbug
+	fmt.Println(r.Body)
+
 	// JSON-Daten aus dem Request-Body einlesen
 	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
 		fmt.Println(err)
