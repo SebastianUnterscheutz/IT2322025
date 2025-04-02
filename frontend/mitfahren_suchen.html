@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>Mitfahrangebot</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-q6NdBFhuF9ToMdntNsEMIeh+ufykLbDs4JBR6iPvc+o=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-wewbHF5jiiiZwmusu7u+woaZRVJs4WVlZIa1P4Etdxo=" crossorigin=""></script>
 </head>
 <body>
 <div class="anbieten_container">
@@ -40,6 +42,8 @@
         </form>
     </div>
 
+    <div id="map" style="height: 500px; width: 100%;"></div>
+
     <div id="results">
         <!-- Suchergebnisse werden hier eingefügt -->
     </div>
@@ -48,20 +52,34 @@
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Referenzen für Eingabefelder und Ergebnisbereich
+        // Definiere den Mittelpunkt der Karte (z.B. auf eine festgelegte Stadt zentrieren)
+        const mapCenter = [51.6668, 11.4759]; // Koordinaten von Hettstedt
+        const mapZoom = 12; // Anfangszoomstufe
+
+        // Initialisiere die Leaflet-Karte
+        const map = L.map('map').setView(mapCenter, mapZoom);
+
+        // Füge die OpenStreetMap-Kacheln hinzu
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Referenzen für Eingabefelder
         const plzField = document.getElementById('plz');
         const ortField = document.getElementById('ort');
         const resultsDiv = document.getElementById('results');
 
-        // Funktion: Anfrage an die Such-API
+        // Layer-Gruppe: Alle Marker zur Karte hinzufügen
+        const markerLayer = L.layerGroup().addTo(map);
+
+        // Funktion: Pins von der API laden
         const fetchSearchResults = () => {
             const plz = plzField.value;
             const ort = ortField.value;
 
-            // API-Endpoint für die Suche
+            // API-Aufruf
             const url = `/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`;
 
-            // Fetch-Aufruf zur API
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
@@ -70,8 +88,50 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Ergebnisse anzeigen
-                    displayResults(data);
+                    // Alte Marker entfernen
+                    markerLayer.clearLayers();
+
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
+                        return;
+                    }
+
+                    resultsDiv.innerHTML = ''; // Alte Text-Ergebnisse löschen
+
+                    // Dynamisch Pins zur Karte hinzufügen
+                    data.forEach(offer => {
+                        const lat = offer.latitude;
+                        const lng = offer.longitude;
+
+                        // Marker hinzufügen
+                        const marker = L.marker([lat, lng]).addTo(markerLayer);
+
+                        // Popup mit Angebotsdetails
+                        marker.bindPopup(`
+                            <h3>${offer.ride.name} (${offer.plz})</h3>
+                            <p>${offer.street} ${offer.house_number}</p>
+                            <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
+                            <p>Details: ${offer.ride.additional_information}</p>
+                        `);
+
+                        // Text-Ergebnisse erzeugen
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'offer';
+                        resultDiv.innerHTML = `
+                            <h3>${offer.ride.name} (${offer.plz})</h3>
+                            <p>${offer.street} ${offer.house_number}</p>
+                            <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
+                        `;
+                        resultsDiv.appendChild(resultDiv);
+                    });
+
+                    // Karte automatisch auf Marker zentrieren (wenn Ergebnisse vorhanden)
+                    if (data.length > 0) {
+                        const bounds = markerLayer.getBounds();
+                        map.fitBounds(bounds, {
+                            padding: [50, 50]
+                        });
+                    }
                 })
                 .catch(error => {
                     console.error('Fehler:', error);
@@ -79,33 +139,10 @@
                 });
         };
 
-        // Funktion: Ergebnisse in den DOM einfügen
-        const displayResults = (data) => {
-            resultsDiv.innerHTML = ''; // Alte Ergebnisse löschen
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
-                return;
-            }
-
-            // Ergebnisse dynamisch erstellen
-            data.forEach(offer => {
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'offer';
-                resultDiv.innerHTML = `
-                    <h3>${offer.ride.name} (${offer.plz}, ${offer.city})</h3>
-                    <p>${offer.street} ${offer.house_number}</p>
-                    <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
-                    <p>Informationen: ${offer.ride.additional_information}</p>
-                `;
-                resultsDiv.appendChild(resultDiv);
-            });
-        };
-
-        // Event-Listener für die Eingabe in die Felder
+        // Event-Listener: Suche bei Eingabe
         [plzField, ortField].forEach(field => {
             field.addEventListener('keyup', () => {
-                fetchSearchResults(); // Suche durchführen bei jedem Tipp
+                fetchSearchResults();
             });
         });
     });
