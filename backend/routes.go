@@ -277,7 +277,7 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if location.Ride.Activated && timeNOW.Before(validUntil) {
+		if location.Ride.Activated && !timeNOW.After(validUntil) {
 			locationsWithRides = append(locationsWithRides, location)
 		}
 	}
@@ -372,7 +372,7 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if location.Ride.Activated && timeNOW.Before(validUntil) {
+		if location.Ride.Activated && !timeNOW.After(validUntil) {
 			results = append(results, location)
 		}
 	}
