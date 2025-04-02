@@ -359,3 +359,107 @@ textarea {
         height: 300px; /* Reduzierte Höhe für kleinere Geräte */
     }
 }
+
+@media screen and (max-width: 1024px) {
+    .container {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: auto;
+        grid-template-areas:
+        "header header"
+        "map map"
+        "text text"
+        "footer footer";
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .map {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .text {
+        padding: 15px 25px 15px 25px;
+    }
+
+    .form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        width: 90%;
+        grid-area: form; /* Das Formular in der Grid-Position 'form' platzieren */
+        margin: 0 auto;
+    }
+
+}
+
+@media screen and (max-width: 550px) {
+    .container {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .anbieten_container {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .suchen_container {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .handbuch_container {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .form {
+        width: auto;
+    }
+
+    #searchInput {
+        width: 100%; /* Volle Breite innerhalb des Containers */
+        font-size: 18px;
+    }
+
+    .ausgewaehlte_map {
+        width: 85vw;
+        border-radius: 0;
+        height: 400px;
+    }
+
+    .header {
+        margin-bottom: 10px;
+        border-radius: 8px;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box; /* Verhindert Überstand durch Padding */
+    }
+
+    .menu {
+        text-align: center;
+        width: 100%;
+    }
+
+    .menu a {
+        display: block;
+        padding: 5px 0;
+    }
+
+    .map {
+        margin-right: 0;
+        width: auto;
+    }
+}
+
+
+
