@@ -229,6 +229,13 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		defer stmtLocation.Close()
 	}
 
+	// Aktivierungs-E-Mail senden
+	if err := sendActivationEmail(offer.Email, offer.Token); err != nil {
+		log.Println("E-Mail konnte nicht gesendet werden:", err)
+		http.Error(w, "Offer created but email could not be sent", http.StatusInternalServerError)
+		return
+	}
+
 	// Erfolgsmeldung zurückgeben
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
