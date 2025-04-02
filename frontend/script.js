@@ -24,7 +24,7 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
     console.log(data.offer_locations)
 
     // Daten an das Backend senden
-    fetch('/api/create/offer', {
+    fetch('https://it232.zbcs.eu/api/create/offer', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
