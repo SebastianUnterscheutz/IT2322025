@@ -60,17 +60,10 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Überprüfen, ob alle Pflichtfelder ausgefüllt sind
-	if offer.Name == "" || offer.Email == "" || offer.Class == "" {
-		http.Error(w, "Missing required fields (PLZ, Ort, Name, E-Mail, Klasse)", http.StatusBadRequest)
-		return
-	}
-
 	offer.Token = fmt.Sprintf("%s-%s-%s-%s", randomString(4), randomString(4), randomString(4), randomString(3))
-	offer.Activated = false
+	offer.Activated = true
 	// Validate required fields are not empty
-	if offer.Name == "" || offer.FirstName == "" || offer.Email == "" || offer.Class == "" ||
-		offer.PhoneNumber == "" || offer.Token == "" {
+	if offer.Name == "" || offer.Email == "" {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}
@@ -276,7 +269,17 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error scanning row: %v", err)
 			return
 		}
-		locationsWithRides = append(locationsWithRides, location)
+		timeNOW := time.Now()
+		validUntil, err := time.Parse("2006-01-02", location.Ride.ValidUntil)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "Invalid date format", http.StatusBadRequest)
+			return
+		}
+
+		if location.Ride.Activated && timeNOW.Before(validUntil) {
+			locationsWithRides = append(locationsWithRides, location)
+		}
 	}
 
 	// Setze den Content-Typ auf JSON
@@ -360,8 +363,18 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 
 		// Füge das Angebot zur Location hinzu
 		location.Ride = &ride
-		results = append(results, location)
-		results = append(results, location)
+
+		timeNOW := time.Now()
+		validUntil, err := time.Parse("2006-01-02", location.Ride.ValidUntil)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "Invalid date format", http.StatusBadRequest)
+			return
+		}
+
+		if location.Ride.Activated && timeNOW.Before(validUntil) {
+			results = append(results, location)
+		}
 	}
 
 	// Ergebnisse als JSON ausgeben
