@@ -135,7 +135,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 			offer.OfferLocations[lid].Longitude = lng
 		}
 
-		if location.Latitude == 0 && location.Longitude == 0 {
+		if offer.OfferLocations[lid].Latitude == 0 && offer.OfferLocations[lid].Longitude == 0 {
 			http.Error(w, "Invalid coordinates", http.StatusBadRequest)
 			return
 		}
