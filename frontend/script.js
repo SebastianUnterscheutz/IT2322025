@@ -1,4 +1,6 @@
-document.getElementById('offerForm').addEventListener('submit', function (event) {
+document.getElementById('offerForm').addEventListener('submit',getData)
+
+function getData(event) {
     event.preventDefault();
     var formData = new FormData(event.target);
 
@@ -48,7 +50,7 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
     }).catch(error => {
         alert('Verbindungsfehler: ' + error.message);
     });
-});
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     const offerForm = document.getElementById('offerForm');
