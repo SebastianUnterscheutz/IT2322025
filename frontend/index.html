@@ -26,7 +26,7 @@
             <a href="software_handbuch.html">Handbuch der Software</a>
         </div>
     </div>
-    <div id="map"></div>
+    <div class="map" id="map"></div>
     <div class="text">
         <p class="second_title">Willkommen bei Fahrgemeinschaften BSZ Vogtland – Deiner Plattform für Fahrgemeinschaften zum BSZ in Rodewisch! </p>
         <p>Wir, eine Gruppe engagierter Schüler aus den IT-Klassen, haben im Rahmen unserer Projektarbeit diese Webseite ins Leben gerufen, um eine einfache und effektive Lösung für den Weg zur Berufsschule zu bieten. <br><br>
@@ -39,7 +39,7 @@
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 <script>
-        let map = L.map('map').setView([50.527724, 12.402964], 13); // Deutschland Mitte als Standard
+        let map = L.map('map').setView([50.527724, 12.402964], 13);
         let userMarker, routeControl;
         let userPosition = null;
 
