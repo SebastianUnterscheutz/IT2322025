@@ -100,7 +100,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	validUntil, err := time.Parse("2006-01-02", offer.ValidFrom)
+	validUntil, err := time.Parse("2006-01-02", offer.ValidUntil)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "Invalid date format", http.StatusBadRequest)
