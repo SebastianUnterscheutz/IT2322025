@@ -147,8 +147,8 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 			offer.OfferLocations[lid].City = city
 		}
 
-		if offer.OfferLocations[lid].Latitude == 0 && offer.OfferLocations[lid].Longitude == 0 {
-			http.Error(w, "Invalid coordinates", http.StatusBadRequest)
+		if offer.OfferLocations[lid].Latitude == 0 && offer.OfferLocations[lid].Longitude == 0 && offer.OfferLocations[lid].PLZ == "" && offer.OfferLocations[lid].City == "" {
+			http.Error(w, "Invalid coordinates OR PLZ and CITY", http.StatusBadRequest)
 			return
 		}
 

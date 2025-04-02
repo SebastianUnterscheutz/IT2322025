@@ -72,6 +72,44 @@ func getCoordinates(address string) (float64, float64, error) {
 	return lat, lon, nil
 }
 
+func getAdressFromCoordinates(lat, lon float64) (string, string, error) {
+	baseURL := "https://nominatim.openstreetmap.org/reverse"
+	params := fmt.Sprintf("?lat=%f&lon=%f&format=json", lat, lon)
+
+	// Build the full URL
+	fullURL := baseURL + params
+
+	// Create an HTTP GET request
+	resp, err := http.Get(fullURL)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to make HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check for a non-200 status code
+	if resp.StatusCode != http.StatusOK {
+		return "", "", fmt.Errorf("received non-200 status code: %d", resp.StatusCode)
+	}
+
+	// Parse the JSON response
+	var data struct {
+		Address struct {
+			Postcode string `json:"postcode"`
+			City     string `json:"city"`
+		} `json:"address"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return "", "", fmt.Errorf("failed to decode JSON: %w", err)
+	}
+
+	// Check if postcode or city is missing
+	if data.Address.Postcode == "" || data.Address.City == "" {
+		return "", "", fmt.Errorf("no valid address found for the given coordinates")
+	}
+
+	return data.Address.Postcode, data.Address.City, nil
+}
+
 func isValidEmail(email string) bool {
 
 	validEmailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
