@@ -265,6 +265,7 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	locationsWithRides := []LocationWithRide{}
 	for rows.Next() {
 		var location LocationWithRide
+		location.Ride = &Offer{} // Ensure the Ride field is initialized (not nil)
 		if err := rows.Scan(
 			&location.ID, &location.RidesID, &location.PLZ, &location.City, &location.Street, &location.HouseNumber,
 			&location.Latitude, &location.Longitude, &location.Ride.Name, &location.Ride.FirstName, &location.Ride.Email,
