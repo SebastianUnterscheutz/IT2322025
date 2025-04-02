@@ -13,7 +13,12 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
         valid_until: formData.get('gueltig_bis'),
         additional_information: formData.get('info'),
         other: "Zusätzliche Angaben", // Optional, falls benötigt
-        offer_locations: [] // Orte werden hier eingefügt
+        offer_locations: [{
+            plz: formData.get('plz'),
+            city: formData.get('ort'),
+            street: formData.get('strasse'),
+            house_number: formData.get('hausnummer')
+        }] // Orte werden hier eingefügt
     };
 
     // Orte sammeln
