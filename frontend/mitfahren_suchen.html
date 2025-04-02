@@ -32,11 +32,7 @@
 
     <div class="form">
         <form id="searchForm">
-            <label for="plz">Postleitzahl:</label>
-            <input type="number" id="plz" name="plz" placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
-
-            <label for="ort">Ort:</label>
-            <input type="text" id="ort" name="ort" placeholder="Ort eingeben">
+            <input type="text" id="searchInput" name="searchInput" placeholder="PLZ oder Ort eingeben...">
 
             <!-- Keine Buttons mehr nötig, da Suche automatisch erfolgt -->
         </form>
@@ -52,100 +48,105 @@
 </div>
 </body>
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        // Definiere den Mittelpunkt der Karte (z.B. auf eine festgelegte Stadt zentrieren)
-        const mapCenter = [50.527724 ,12.402964]; // Koordinaten von Hettstedt
-        const mapZoom = 12; // Anfangszoomstufe
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialisieren der Kartenansicht
+        const mapCenter = [50.527724, 12.402964];
+        const mapZoom = 11;
 
-        // Initialisiere die Leaflet-Karte
+        // Leaflet-Karte initialisieren
         const map = L.map('map').setView(mapCenter, mapZoom);
 
-        // Füge die OpenStreetMap-Kacheln hinzu
+        // OpenStreetMap-Kachel-Layer hinzufügen
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-        // Referenzen für Eingabefelder
-        const plzField = document.getElementById('plz');
-        const ortField = document.getElementById('ort');
+        // Eingabefeld und Ergebnisse
+        const searchField = document.getElementById('searchInput');
         const resultsDiv = document.getElementById('results');
 
-        // Layer-Gruppe: Alle Marker zur Karte hinzufügen
+        // Layer-Gruppe für Marker verwalten
         const markerLayer = L.layerGroup().addTo(map);
 
-        // Funktion: Pins von der API laden
+        // Funktion: Suchanfrage an die API senden
         const fetchSearchResults = () => {
-        const plz = plzField.value;
-        const ort = ortField.value;
+            const input = searchField.value.trim();
 
-        // API-Aufruf
-        const url = `/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`;
+            // Trenne Eingaben: PLZ und Ortsname
+            let plz = '';
+            let city = '';
 
-        fetch(url)
-        .then(response => {
-        if (!response.ok) {
-        throw new Error('Netzwerkfehler: ' + response.status);
-    }
-        return response.json();
-    })
-        .then(data => {
-        // Alte Marker entfernen
-        markerLayer.clearLayers();
+            if (!isNaN(input) && input.length <= 5) {
+                // Eingabe ist eine PLZ (5-stellige Zahl)
+                plz = input;
+            } else {
+                // Eingabe wird als Ort interpretiert
+                city = input;
+            }
 
-        if (data.length === 0) {
-        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
-        return;
-    }
+            // API-URL generieren
+            const url = `/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(city)}`;
 
-        resultsDiv.innerHTML = ''; // Alte Text-Ergebnisse löschen
+            // API-Aufruf
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Netzwerkfehler: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Marker auf der Karte entfernen
+                    markerLayer.clearLayers();
 
-        // Dynamisch Pins zur Karte hinzufügen
-        data.forEach(offer => {
-        const lat = offer.latitude;
-        const lng = offer.longitude;
+                    // Wenn keine Ergebnisse vorhanden
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
+                        return;
+                    }
 
-        // Marker hinzufügen
-        const marker = L.marker([lat, lng]).addTo(markerLayer);
+                    // Ergebnisse anzeigen und Marker hinzufügen
+                    resultsDiv.innerHTML = '';
+                    data.forEach(offer => {
+                        const lat = offer.latitude;
+                        const lng = offer.longitude;
 
-        // Popup mit Angebotsdetails
-        marker.bindPopup(`
+                        // Marker hinzufügen
+                        const marker = L.marker([lat, lng]).addTo(markerLayer);
+
+                        // Popup-Inhalt für jeden Marker
+                        marker.bindPopup(`
                             <h3>${offer.ride.name} (${offer.plz})</h3>
                             <p>${offer.street} ${offer.house_number}</p>
-                            <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
-                            <p>Details: ${offer.ride.additional_information}</p>
+                            <p>Zeitraum: ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
                         `);
 
-        // Text-Ergebnisse erzeugen
-        const resultDiv = document.createElement('div');
-        resultDiv.className = 'offer';
-        resultDiv.innerHTML = `
-                            <h3>${offer.ride.name} (${offer.plz})</h3>
-                            <p>${offer.street} ${offer.house_number}</p>
-                            <p>Zeitraum: ${offer.ride.valid_from} bis ${offer.ride.valid_until}</p>
+                        // Text-Anzeige der Ergebnisse
+                        resultsDiv.innerHTML += `
+                            <div>
+                                <h3>${offer.ride.name} (${offer.plz})</h3>
+                                <p>${offer.street} ${offer.house_number}, ${offer.city}</p>
+                                <p>Zeitraum: ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
+                            </div>
                         `;
-        resultsDiv.appendChild(resultDiv);
-    });
+                    });
+                })
+                .catch(error => {
+                    console.error('Fehler beim Abrufen der Suchergebnisse:', error);
+                    resultsDiv.innerHTML = '<p>Es gab ein Problem bei der Suche. Bitte versuchen Sie es später erneut.</p>';
+                });
+        };
 
-        // Karte automatisch auf Marker zentrieren (wenn Ergebnisse vorhanden)
-        if (data.length > 0) {
-        const bounds = markerLayer.getBounds();
-        map.fitBounds(bounds, {
-        padding: [50, 50]
-    });
-    }
-    })
-        .catch(error => {
-        console.error('Fehler:', error);
-        resultsDiv.innerHTML = '<p>Fehler beim Abrufen der Daten.</p>';
-    });
-    };
-
-        // Event-Listener: Suche bei Eingabe
-        [plzField, ortField].forEach(field => {
-        field.addEventListener('keyup', () => {
-        fetchSearchResults();
-    });
-    });
+        // Event-Listener für Eingabefeld
+        searchField.addEventListener('input', () => {
+            if (searchField.value.trim() !== '') {
+                fetchSearchResults();
+            } else {
+                // Ergebnisse und Marker löschen, wenn das Feld leer ist
+                resultsDiv.innerHTML = '';
+                markerLayer.clearLayers();
+            }
+        });
     });
 </script>
 </html>

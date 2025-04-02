@@ -1,5 +1,6 @@
 map {
     height: 80vh;
+    display: flex;
     margin-right: 10px;
     border: 1px solid #ccc; /* Dünner Rahmen um die Karte */
     border-radius: 8px; /* Runde Ecken */
@@ -297,6 +298,41 @@ textarea {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+.offer {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.offer h3 {
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.offer p {
+    margin: 5px 0;
+    color: #555;
+}
+
+/* Styles für den Karten-Container */
+#map {
+    height: 500px; /* Höhe der Karte */
+    width: 100%; /* Karte nimmt die gesamte Breite ein */
+    margin-top: 20px; /* Abstand über der Karte */
+    border: 1px solid #ccc; /* Dünner Rahmen um die Karte */
+    border-radius: 8px; /* Runde Ecken */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten für einen modernen Look */
+}
+
+/* Dynamische Karte an kleinere Bildschirme anpassen */
+@media (max-width: 768px) {
+    #map {
+        height: 300px; /* Reduzierte Höhe für kleinere Geräte */
+    }
 }
 
 .header { grid-area: header; }

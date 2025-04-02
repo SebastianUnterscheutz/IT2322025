@@ -75,7 +75,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate phone number length (e.g., you can adjust as per your system's requirement)
-	if len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15 {
+	if len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15 || offer.PhoneNumber == "" {
 		http.Error(w, "Invalid phone number", http.StatusBadRequest)
 		return
 	}
@@ -133,10 +133,23 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 			offer.OfferLocations[lid].Latitude = lat
 			offer.OfferLocations[lid].Longitude = lng
+		} else {
+			fmt.Println(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
+			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
+			if err != nil {
+				fmt.Printf("Error: %v\n", err)
+				http.Error(w, "Could not get Address", http.StatusInternalServerError)
+				return
+			} else {
+				fmt.Printf("plz: %f, city: %f\n", plz, city)
+			}
+
+			offer.OfferLocations[lid].PLZ = plz
+			offer.OfferLocations[lid].City = city
 		}
 
-		if offer.OfferLocations[lid].Latitude == 0 && offer.OfferLocations[lid].Longitude == 0 {
-			http.Error(w, "Invalid coordinates", http.StatusBadRequest)
+		if offer.OfferLocations[lid].Latitude == 0 && offer.OfferLocations[lid].Longitude == 0 && offer.OfferLocations[lid].PLZ == "" && offer.OfferLocations[lid].City == "" {
+			http.Error(w, "Invalid coordinates OR PLZ and CITY", http.StatusBadRequest)
 			return
 		}
 
@@ -269,17 +282,9 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error scanning row: %v", err)
 			return
 		}
-		timeNOW := time.Now()
-		validUntil, err := time.Parse("2006-01-02", location.Ride.ValidUntil)
-		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Invalid date format", http.StatusBadRequest)
-			return
-		}
 
-		if timeNOW.After(validUntil) {
-			locationsWithRides = append(locationsWithRides, location)
-		}
+		locationsWithRides = append(locationsWithRides, location)
+
 	}
 
 	// Setze den Content-Typ auf JSON
@@ -293,96 +298,67 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchOffers(w http.ResponseWriter, r *http.Request) {
-	// Überprüfe, ob die Methode GET ist
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	// Content-Type setzen
+	w.Header().Set("Content-Type", "application/json")
 
-	// Lese die Query-Parameter
+	// Suchparameter aus der URL parsen
 	plz := r.URL.Query().Get("plz")
 	city := r.URL.Query().Get("city")
 
+	// SQL-Bedingungen für unscharfe Suche
 	query := `
-		SELECT o.id, o.rides_id, o.plz, o.city, o.street, o.house_number, o.latitude, o.longitude, 
-		       r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
-		       r.additional_information, r.other, r.token, r.activated
-		FROM locations_on_the_way AS o
-		INNER JOIN rides AS r ON o.rides_id = r.id
-		WHERE o.plz LIKE ? AND o.city LIKE ?
-	` // Die Abfrage sucht nach PLZ und Ort in der "locations_on_the_way"-Tabelle
+		SELECT l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude, 
+			   r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
+			   r.additional_information, r.other, r.token, r.activated
+		FROM locations_on_the_way l
+		JOIN rides r ON l.rides_id = r.id
+		WHERE l.plz LIKE ? AND l.city LIKE ?`
 
-	// Füge Platzhalter `%` hinzu, wenn keine Werte angegeben werden
-	if plz == "" {
-		plz = "%"
-	}
-	if city == "" {
-		city = "%"
-	}
+	// Suchmuster für unscharfe Suche vorbereiten
+	plzPattern := "%" + plz + "%"
+	cityPattern := "%" + city + "%"
 
-	rows, err := dbCon.Query(query, plz, city)
+	// Daten abfragen
+	rows, err := dbCon.Query(query, plzPattern, cityPattern)
 	if err != nil {
-		http.Error(w, "Could not query offers", http.StatusInternalServerError)
-		log.Printf("Query error: %v", err)
+		log.Printf("Datenbankfehler: %v", err)
+		http.Error(w, "Fehler bei der Suche", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
 
-	// Ergebnisse sammeln
+	// Ergebnisse speichern
 	var results []OfferLocations
 	for rows.Next() {
 		var location OfferLocations
 		var ride Offer
 
-		// Lese die Ergebnisse
-		if err := rows.Scan(
-			&location.ID,
-			&location.RidesID,
-			&location.PLZ,
-			&location.City,
-			&location.Street,
-			&location.HouseNumber,
-			&location.Latitude,
-			&location.Longitude,
-			&ride.Name,
-			&ride.FirstName,
-			&ride.Email,
-			&ride.Class,
-			&ride.PhoneNumber,
-			&ride.ValidFrom,
-			&ride.ValidUntil,
-			&ride.AdditionalInformation,
-			&ride.Other,
-			&ride.Token,
-			&ride.Activated,
-		); err != nil {
-			http.Error(w, "Could not scan results", http.StatusInternalServerError)
-			log.Printf("Error scanning results: %v", err)
-			return
-		}
-
-		// Füge das Angebot zur Location hinzu
-		location.Ride = &ride
-
-		timeNOW := time.Now()
-		validUntil, err := time.Parse("2006-01-02", location.Ride.ValidUntil)
+		err := rows.Scan(
+			&location.ID, &location.RidesID, &location.PLZ, &location.City, &location.Street, &location.HouseNumber,
+			&location.Latitude, &location.Longitude, &ride.Name, &ride.FirstName, &ride.Email, &ride.Class,
+			&ride.PhoneNumber, &ride.ValidFrom, &ride.ValidUntil, &ride.AdditionalInformation,
+			&ride.Other, &ride.Token, &ride.Activated,
+		)
 		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Invalid date format", http.StatusBadRequest)
+			log.Printf("Fehler beim Lesen der Ergebnisse: %v", err)
+			http.Error(w, "Fehler beim Verarbeiten der Ergebnisse", http.StatusInternalServerError)
 			return
 		}
 
-		fmt.Println(validUntil)
-		fmt.Println(timeNOW)
-		if validUntil.After(timeNOW) {
-			results = append(results, location)
-		}
+		location.Ride = &ride
+		results = append(results, location)
 	}
 
-	// Ergebnisse als JSON ausgeben
-	w.Header().Set("Content-Type", "application/json")
+	// Wenn keine Ergebnisse vorliegen, leeres Array zurückgeben
+	if len(results) == 0 {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("[]"))
+		return
+	}
+
+	// Ergebnisse als JSON kodieren und zurückgeben
 	if err := json.NewEncoder(w).Encode(results); err != nil {
-		http.Error(w, "Could not encode results to JSON", http.StatusInternalServerError)
-		log.Printf("Encoding error: %v", err)
+		log.Printf("Fehler bei der Antwortkodierung: %v", err)
+		http.Error(w, "Fehler bei der Ausgabe der Ergebnisse", http.StatusInternalServerError)
 	}
 }
