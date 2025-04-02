@@ -157,6 +157,7 @@ func sendActivationEmail(email, token string) error {
 		"Subject: " + subject + "\n\n" +
 		body)
 
+	fmt.Println(smtpHost, smtpPort, smtpUser, smtpPass, from, to, subject, body, msg)
 	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, msg)
 	if err != nil {
