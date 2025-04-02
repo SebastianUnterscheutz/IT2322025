@@ -17,15 +17,11 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
     };
 
     // Orte sammeln
-    var locations = document.querySelectorAll('[name^="ort"], [name^="plz"]');
-    for (var i = 0; i < locations.length; i += 2) {
-        data.offer_locations.push({
-            plz: locations[i + 1].value,
-            city: locations[i].value,
-            street: formData.get('strasse') || "", // Sicherstellen, dass Straßeninformationen leer sein können
-            house_number: formData.get('hausnummer') || "" // Sicherstellen, dass Hausnummern leer sein können
-        });
+    var filteredLocations = locations.filter(item => item !== null);
+    for (var i = 0; i < filteredLocations.length; i++) {
+        data.offer_locations.push(filteredLocations[i]);
     }
+    console.log(data.offer_locations)
 
     // Daten an das Backend senden
     fetch('/api/create/offer', {
@@ -38,8 +34,11 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
         if (response.ok) {
             alert('Angebot erfolgreich erstellt.');
         } else {
-            alert('Fehler beim Erstellen des Angebots.');
+            alert(`
+                Fehler beim Erstellen des Angebots.
+                ${JSON.stringify(response)}`);
         }
+        console.log(response)
     }).catch(error => {
         alert('Verbindungsfehler: ' + error.message);
     });
@@ -53,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 var map;
+var locations = [];
+document.markers = [];
 
 // handle interactive map to add new locations on the way
 function loadMapInForm() {
@@ -65,12 +66,22 @@ function loadMapInForm() {
     marker.bindPopup("<b>BSZ Rodewisch</b>")
     map.on('click', onMapClick)
 }
-
 function onMapClick(e) {
-    // L.popup()
-    //     .setLatLng(e.latlng)
-    //     .setContent("Punkt auf dem Weg")
-    //     .openOn(L.map('map'));
-    marker = L.marker(e.latlng).addTo(map);
-    marker.bindPopup("Punkt auf dem Weg").openPopup();
+    // Marker auf Karte anzeigen und Button zum Entfernen hinzufügen
+    var marker = L.marker(e.latlng).addTo(map);
+    document.markers.push(marker)
+    marker.bindPopup(`
+        <button type="button" onclick="removeMarker(${document.markers.length-1});">Entfernen</button>
+    `).openPopup();
+    // Ort vorbereiten zum Anschicken
+    locations.push({
+        latitude: e.latlng.lat,
+        longitude: e.latlng.lng
+    })
+}
+
+function removeMarker(index) {
+    // Marker von Karte und Orte Array entfernen
+    map.removeLayer(document.markers[index]);
+    locations[index] = null;
 }
