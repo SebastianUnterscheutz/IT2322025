@@ -47,6 +47,24 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
+        fetch('https://it232.zbcs.eu/api/get/offers')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(offer => {
+                    let marker = L.marker([offer.latitude, offer.longitude]).addTo(map);
+
+                    let popupContent = `<b>${offer.ride.name}</b><br>
+                                ${offer.street} ${offer.house_number}, ${offer.plz} ${offer.city}<br>
+                                <b>Kontakt:</b> ${offer.ride.first_name} - ${offer.ride.email}<br>
+                                <b>Telefon:</b> ${offer.ride.phone_number}<br>
+                                <b>Gültig von:</b> ${offer.ride.valid_from} bis ${offer.ride.valid_until}<br>
+                                <b>Zusätzliche Infos:</b> ${offer.ride.additional_information}`;
+
+                    marker.bindPopup(popupContent);
+                });
+            })
+            .catch(error => console.error('Fehler beim Laden der Daten:', error));
 </script>
 </body>
 </html>
