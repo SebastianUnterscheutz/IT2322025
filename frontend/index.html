@@ -22,7 +22,6 @@
         <div class="menu">
             <a href="mitfahren_suchen.html">Mitfahrgelegenheiten suchen</a>
             <a href="mitfahren_anbieten.html">Mitfahrgelegenheit anbieten</a>
-            <a href="mitfahrmoeglichkeiten_liste.html">Liste der Mitfahrmöglichkeiten</a>
             <a href="software_handbuch.html">Handbuch der Software</a>
         </div>
     </div>
@@ -34,6 +33,11 @@
             In der heutigen Zeit stehen wir vor vielen Herausforderungen, darunter steigende Fahrtkosten, Umweltbelastungen und die Notwendigkeit, neue Freundschaften zu schließen. <br><br>
             Mit unserer Plattform möchten wir nicht nur die Anreise zur Berufsschule erleichtern, sondern auch einen Beitrag zum Klimaschutz leisten. <br><br>
             Wenn du bereits selbst zur Schule fährst, biete deine Fahrt auch für andere an. Oder suche nach einer passenden Fahrgemeinschaft in deiner Nähe.</p>
+    </div>
+    <div class="footer">
+        <div class="footer_menu">
+            <a href="impressum.html">Impressum</a>
+        </div>
     </div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
@@ -48,6 +52,7 @@
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
+        //Informationen und Pins anzeigen
         fetch('https://it232.zbcs.eu/api/get/offers')
             .then(response => response.json())
             .then(data => {
