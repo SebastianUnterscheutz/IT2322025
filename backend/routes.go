@@ -56,9 +56,6 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	var offer Offer
 
-	//todo DEbug
-	fmt.Println(r.Body)
-
 	// JSON-Daten aus dem Request-Body einlesen
 	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
 		fmt.Println(err)
@@ -126,18 +123,22 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for lid, location := range offer.OfferLocations {
-		address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
-		lat, lng, err := getCoordinates(address)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			http.Error(w, "Could not get coordinates", http.StatusInternalServerError)
-			return
-		} else {
-			fmt.Printf("Latitude: %f, Longitude: %f\n", lat, lng)
+
+		if location.PLZ != "" && location.City != "" {
+			address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
+			lat, lng, err := getCoordinates(address)
+			if err != nil {
+				fmt.Printf("Error: %v\n", err)
+				http.Error(w, "Could not get coordinates", http.StatusInternalServerError)
+				return
+			} else {
+				fmt.Printf("Latitude: %f, Longitude: %f\n", lat, lng)
+			}
+
+			offer.OfferLocations[lid].Latitude = lat
+			offer.OfferLocations[lid].Longitude = lng
 		}
 
-		offer.OfferLocations[lid].Latitude = lat
-		offer.OfferLocations[lid].Longitude = lng
 	}
 
 	// Prepared Statement für die Datenbankeintragung
