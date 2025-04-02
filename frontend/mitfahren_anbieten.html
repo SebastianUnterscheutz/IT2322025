@@ -43,18 +43,70 @@
             <label>Weitere Informationen: <textarea name="info" placeholder="Informationen"></textarea></label><br>
 
             <label>
-                <button type="button" id="togglePlaces" class="toggle-places">+ Weitere Orte zum Mitnehmen</button>
-                <div id="placesForm" class="places-form" style="display: none;">
-                    <label>Ort: <input type="text" name="weiterer_ort[]" placeholder="Ort"></label><br>
-                    <label>PLZ: <input type="number" name="weiterer_plz[]" placeholder="PLZ"></label><br>
-                    <button class="hinzufuegen_button" type="button" id="addPlace">Hinzufügen</button>
+                <div class="additional-places">
+                    <button type="button" id="togglePlaces" class="toggle-places">+ Weitere Orte zum Mitnehmen</button>
+                    <div id="placesForm" class="places-form" style="display: none;">
+                        <label>Ort: <input type="text" name="weiterer_ort[]" placeholder="Ort"></label><br>
+                        <label>PLZ: <input type="number" name="weiterer_plz[]" placeholder="PLZ"></label><br>
+                        <button class="hinzufuegen_button" type="button" id="addPlace">Hinzufügen</button>
+                    </div>
                 </div>
             </label>
-
-            <button class="anbieten_button" type="submit">Mitfahrgelegenheit anbieten</button>
+            <br>
+            <button id="anbieten" class="anbieten_button" type="submit">Mitfahrgelegenheit anbieten</button>
         </form>
     </div>
 </div>
+<script>
+    // Aufklappen/Zu klappen des zusätzlichen Formulars
+    document.getElementById('togglePlaces').addEventListener('click', function() {
+        var placesForm = document.getElementById('placesForm');
+        if (placesForm.style.display === 'none') {
+            placesForm.style.display = 'block';
+        } else {
+            placesForm.style.display = 'none';
+        }
+    });
+
+    // Hinzufügen eines neuen Orts
+    document.getElementById('addPlace').addEventListener('click', function() {
+        // Abrufen der Werte
+        var ort = document.querySelector('input[name="weiterer_ort[]"]').value;
+        var plz = document.querySelector('input[name="weiterer_plz[]"]').value;
+
+        // Validierung
+        if (ort && plz) {
+            // Hinzufügen der neuen Ortsangabe zum Formular
+            var ortInput = document.createElement('input');
+            ortInput.type = 'text';
+            ortInput.name = 'ort[]';
+            ortInput.value = ort;
+            ortInput.readOnly = true;
+
+            var plzInput = document.createElement('input');
+            plzInput.type = 'number';
+            plzInput.name = 'plz[]';
+            plzInput.value = plz;
+            plzInput.readOnly = true;
+
+            var additionalPlaces = document.createElement('label');
+            additionalPlaces.classList.add('place-entry');
+            additionalPlaces.appendChild(ortInput);
+            additionalPlaces.appendChild(plzInput);
+
+            // Dem Formular hinzufügen
+            document.querySelector('#offerForm').insertBefore(additionalPlaces, document.querySelector('.anbieten_button'));
+
+            // Eingabefelder leeren und das Formular schließen
+            document.querySelector('input[name="weiterer_ort[]"]').value = '';
+            document.querySelector('input[name="weiterer_plz[]"]').value = '';
+            document.getElementById('placesForm').style.display = 'none';
+        } else {
+            alert('Bitte Ort und PLZ eingeben.');
+        }
+    });
+
+</script>
 <script src="script.js"></script>
 </body>
 </html>
