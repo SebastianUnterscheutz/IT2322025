@@ -120,10 +120,9 @@
                             <p>${offer.street} ${offer.house_number}</p>
                             <p>Zeitraum: ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
                         `);
-
                         // Text-Anzeige der Ergebnisse
                         resultsDiv.innerHTML += `
-                            <div>
+                            <div class="offer">
                                 <h3>${offer.ride.name} (${offer.plz})</h3>
                                 <p>${offer.street} ${offer.house_number}, ${offer.city}</p>
                                 <p>Zeitraum: ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
