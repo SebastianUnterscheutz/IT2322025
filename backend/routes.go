@@ -285,85 +285,67 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchOffers(w http.ResponseWriter, r *http.Request) {
-	// Überprüfe, ob die Methode GET ist
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	// Content-Type setzen
+	w.Header().Set("Content-Type", "application/json")
 
-	// Lese die Query-Parameter
+	// Suchparameter aus der URL parsen
 	plz := r.URL.Query().Get("plz")
 	city := r.URL.Query().Get("city")
 
+	// SQL-Bedingungen für unscharfe Suche
 	query := `
-		SELECT o.id, o.rides_id, o.plz, o.city, o.street, o.house_number, o.latitude, o.longitude, 
-		       r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
-		       r.additional_information, r.other, r.token, r.activated
-		FROM locations_on_the_way AS o
-		INNER JOIN rides AS r ON o.rides_id = r.id
-		WHERE o.plz LIKE ? AND o.city LIKE ?
-	` // Die Abfrage sucht nach PLZ und Ort in der "locations_on_the_way"-Tabelle
+		SELECT l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude, 
+			   r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
+			   r.additional_information, r.other, r.token, r.activated
+		FROM locations_on_the_way l
+		JOIN rides r ON l.rides_id = r.id
+		WHERE l.plz LIKE ? AND l.city LIKE ?`
 
-	// Füge Platzhalter `%` hinzu, wenn keine Werte angegeben werden
-	if plz == "" {
-		plz = "%"
-	}
-	if city == "" {
-		city = "%"
-	}
+	// Suchmuster für unscharfe Suche vorbereiten
+	plzPattern := "%" + plz + "%"
+	cityPattern := "%" + city + "%"
 
-	rows, err := dbCon.Query(query, plz, city)
+	// Daten abfragen
+	rows, err := dbCon.Query(query, plzPattern, cityPattern)
 	if err != nil {
-		http.Error(w, "Could not query offers", http.StatusInternalServerError)
-		log.Printf("Query error: %v", err)
+		log.Printf("Datenbankfehler: %v", err)
+		http.Error(w, "Fehler bei der Suche", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
 
-	// Ergebnisse sammeln
+	// Ergebnisse speichern
 	var results []OfferLocations
 	for rows.Next() {
 		var location OfferLocations
 		var ride Offer
 
-		// Lese die Ergebnisse
-		if err := rows.Scan(
-			&location.ID,
-			&location.RidesID,
-			&location.PLZ,
-			&location.City,
-			&location.Street,
-			&location.HouseNumber,
-			&location.Latitude,
-			&location.Longitude,
-			&ride.Name,
-			&ride.FirstName,
-			&ride.Email,
-			&ride.Class,
-			&ride.PhoneNumber,
-			&ride.ValidFrom,
-			&ride.ValidUntil,
-			&ride.AdditionalInformation,
-			&ride.Other,
-			&ride.Token,
-			&ride.Activated,
-		); err != nil {
-			http.Error(w, "Could not scan results", http.StatusInternalServerError)
-			log.Printf("Error scanning results: %v", err)
+		err := rows.Scan(
+			&location.ID, &location.RidesID, &location.PLZ, &location.City, &location.Street, &location.HouseNumber,
+			&location.Latitude, &location.Longitude, &ride.Name, &ride.FirstName, &ride.Email, &ride.Class,
+			&ride.PhoneNumber, &ride.ValidFrom, &ride.ValidUntil, &ride.AdditionalInformation,
+			&ride.Other, &ride.Token, &ride.Activated,
+		)
+		if err != nil {
+			log.Printf("Fehler beim Lesen der Ergebnisse: %v", err)
+			http.Error(w, "Fehler beim Verarbeiten der Ergebnisse", http.StatusInternalServerError)
 			return
 		}
 
-		// Füge das Angebot zur Location hinzu
 		location.Ride = &ride
-
 		results = append(results, location)
-
 	}
 
-	// Ergebnisse als JSON ausgeben
-	w.Header().Set("Content-Type", "application/json")
+	// Wenn keine Ergebnisse vorliegen, leeres Array zurückgeben
+	if len(results) == 0 {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("[]"))
+		return
+	}
+
+	// Ergebnisse als JSON kodieren und zurückgeben
 	if err := json.NewEncoder(w).Encode(results); err != nil {
-		http.Error(w, "Could not encode results to JSON", http.StatusInternalServerError)
-		log.Printf("Encoding error: %v", err)
+		log.Printf("Fehler bei der Antwortkodierung: %v", err)
+		http.Error(w, "Fehler bei der Ausgabe der Ergebnisse", http.StatusInternalServerError)
 	}
 }
