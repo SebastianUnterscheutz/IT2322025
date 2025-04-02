@@ -38,7 +38,7 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
     }).then(response => {
         if (response.ok) {
             alert('Angebot erfolgreich erstellt.');
-            window.location.href = "/";
+            window.location.href = "https://it232.zbcs.eu";
         } else {
             alert(`
                 Fehler beim Erstellen des Angebots.
