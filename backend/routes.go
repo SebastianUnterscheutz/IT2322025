@@ -35,6 +35,7 @@ type OfferLocations struct {
 	HouseNumber string  `json:"house_number"`
 	Latitude    float64 `json:"latitude"`
 	Longitude   float64 `json:"longitude"`
+	Ride        *Offer  `json:"ride"`
 }
 
 // Globale Datenbankverbindung
@@ -258,7 +259,7 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	// Struktur, die sowohl Locations als auch die zugehörigen Ride-Informationen enthält
 	type LocationWithRide struct {
 		OfferLocations
-		Ride Offer `json:"ride"`
+		Ride *Offer `json:"ride"`
 	}
 
 	locationsWithRides := []LocationWithRide{}
@@ -284,5 +285,88 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(locationsWithRides); err != nil {
 		http.Error(w, "Could not encode JSON", http.StatusInternalServerError)
 		return
+	}
+}
+
+func searchOffers(w http.ResponseWriter, r *http.Request) {
+	// Überprüfe, ob die Methode GET ist
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Lese die Query-Parameter
+	plz := r.URL.Query().Get("plz")
+	city := r.URL.Query().Get("city")
+
+	query := `
+		SELECT o.id, o.rides_id, o.plz, o.city, o.street, o.house_number, o.latitude, o.longitude, 
+		       r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
+		       r.additional_information, r.other, r.token, r.activated
+		FROM locations_on_the_way AS o
+		INNER JOIN rides AS r ON o.rides_id = r.id
+		WHERE o.plz LIKE ? AND o.city LIKE ?
+	` // Die Abfrage sucht nach PLZ und Ort in der "locations_on_the_way"-Tabelle
+
+	// Füge Platzhalter `%` hinzu, wenn keine Werte angegeben werden
+	if plz == "" {
+		plz = "%"
+	}
+	if city == "" {
+		city = "%"
+	}
+
+	rows, err := dbCon.Query(query, plz, city)
+	if err != nil {
+		http.Error(w, "Could not query offers", http.StatusInternalServerError)
+		log.Printf("Query error: %v", err)
+		return
+	}
+	defer rows.Close()
+
+	// Ergebnisse sammeln
+	var results []OfferLocations
+	for rows.Next() {
+		var location OfferLocations
+		var ride Offer
+
+		// Lese die Ergebnisse
+		if err := rows.Scan(
+			&location.ID,
+			&location.RidesID,
+			&location.PLZ,
+			&location.City,
+			&location.Street,
+			&location.HouseNumber,
+			&location.Latitude,
+			&location.Longitude,
+			&ride.Name,
+			&ride.FirstName,
+			&ride.Email,
+			&ride.Class,
+			&ride.PhoneNumber,
+			&ride.ValidFrom,
+			&ride.ValidUntil,
+			&ride.AdditionalInformation,
+			&ride.Other,
+			&ride.Token,
+			&ride.Activated,
+		); err != nil {
+			http.Error(w, "Could not scan results", http.StatusInternalServerError)
+			log.Printf("Error scanning results: %v", err)
+			return
+		}
+
+		// Füge das Angebot zur Location hinzu
+		location.Ride = &ride
+		results = append(results, location)
+		results = append(results, location)
+	}
+
+	// Ergebnisse als JSON ausgeben
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(results); err != nil {
+		http.Error(w, "Could not encode results to JSON", http.StatusInternalServerError)
+		log.Printf("Encoding error: %v", err)
 	}
 }

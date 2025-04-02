@@ -29,20 +29,66 @@
     </div>
 
     <div class="form">
-        <form action="#" method="POST">
+        <form id="searchForm">
             <label for="plz">Postleitzahl *:</label>
-            <input type="text" id="plz" name="plz" required placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
+            <input type="text" id="plz" name="plz" placeholder="PLZ eingeben" pattern="\d{5}" title="Fünfstellige Postleitzahl">
 
             <label for="ort">Ort *:</label>
-            <input type="text" id="ort" name="ort" required placeholder="Ort eingeben">
+            <input type="text" id="ort" name="ort" placeholder="Ort eingeben">
 
-            <label for="radius">Umkreis:</label>
-            <input type="text" id="radius" name="radius" required placeholder="Radius eingeben">
-
-            <input class="anbieten_button" type="submit" value="Absenden">
+            <input class="anbieten_button" type="button" id="searchButton" value="Suchen">
         </form>
+    </div>
+
+    <div id="results">
+        <!-- Hier werden Suchergebnisse angezeigt -->
     </div>
 </div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchButton = document.getElementById('searchButton');
+        const resultsDiv = document.getElementById('results');
 
+        // Event-Listener für den Suchbutton
+        searchButton.addEventListener('click', function() {
+            const plz = document.getElementById('plz').value;
+            const ort = document.getElementById('ort').value;
+
+            // API-Aufruf mit Fetch
+            fetch(`/api/search/offers?plz=${encodeURIComponent(plz)}&city=${encodeURIComponent(ort)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Ergebnisse anzeigen
+                    resultsDiv.innerHTML = '';
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p>Keine Ergebnisse gefunden.</p>';
+                        return;
+                    }
+
+                    // Ergebnisse dynamisch generieren
+                    data.forEach(offer => {
+                        const offerDiv = document.createElement('div');
+                        offerDiv.className = 'offer';
+                        offerDiv.innerHTML = `
+                            <h3>${offer.ride.name} (${offer.plz} - ${offer.city})</h3>
+                            <p>Strasse: ${offer.street} ${offer.house_number}</p>
+                            <p>Von: ${offer.ride.valid_from} Bis: ${offer.ride.valid_until}</p>
+                            <p>Details: ${offer.ride.additional_information}</p>
+                        `;
+                        resultsDiv.appendChild(offerDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    resultsDiv.innerHTML = '<p>Fehler beim Laden der Ergebnisse. Bitte versuchen Sie es erneut.</p>';
+                });
+        });
+    });
+</script>
 </html>
