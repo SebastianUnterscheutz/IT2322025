@@ -271,3 +271,54 @@ textarea {
 .text { grid-area: text; }
 .bottom { grid-area: bottom; }
 .theme_title { grid-area: theme_title; }
+
+/* Formular-Container-Styling */
+.form {
+    max-width: 600px; /* Begrenzung der maximalen Breite */
+    margin: 0 auto; /* Zentriere das Formular */
+    padding: 20px; /* Innenabstände */
+    background-color: #f7f7f7; /* Hellgrauer Hintergrund */
+    border: 1px solid #ddd; /* Rahmenfarbe */
+    border-radius: 8px; /* Runde Ecken */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
+}
+
+/* Formular-Abstände */
+.form label {
+    display: block; /* Labels als eigene Zeilen */
+    font-weight: bold; /* Fettgedruckt, um hervorzuheben */
+    margin-bottom: 5px; /* Kleinere Abstände unter Labels */
+    color: #333; /* Dezentes Schwarz */
+}
+
+.form input {
+    width: calc(100% - 20px); /* Anpassung an die Breite des Containers */
+    padding: 10px; /* Innenabstand zur besseren Lesbarkeit */
+    margin-bottom: 15px; /* Platz zwischen Eingabefeldern */
+    border: 1px solid #ccc; /* Rahmen um Input-Felder */
+    border-radius: 4px; /* Runde Ecken */
+    font-size: 14px; /* Lesbare Schriftgröße */
+}
+
+.form input:focus {
+    border-color: #4caf50; /* Grüne Hervorhebung bei Fokus */
+    outline: none; /* Standard-Fokus-Hervorhebung entfernen */
+}
+
+.anbieten_button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4caf50; /* Grüne Hintergrundfarbe */
+    color: white; /* Textfarbe Weiß */
+    border: none; /* Kein Rahmen */
+    border-radius: 4px; /* Runde Ecken */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer; /* Zeiger symbolisiert Klickbarkeit */
+    transition: background-color 0.3s ease; /* Weiche Hover-Animation */
+}
+
+.anbieten_button:hover {
+    background-color: #45a049; /* Etwas dunkleres Grün bei Hover */
+}
