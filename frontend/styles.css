@@ -218,11 +218,6 @@ textarea {
     transition: background-color 0.3s ease;
 }
 
-
-
-
-
-
 /*schauen wo es her kommt*/
 .offer {
     border: 1px solid #ccc;
@@ -241,11 +236,6 @@ textarea {
     margin: 5px 0;
     color: #555;
 }
-
-
-
-
-
 
 /* Styles für den Karten-Container */
 .ausgewaehlte_map {
@@ -272,12 +262,15 @@ textarea {
 
 .suchen_container {
     display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 75% 25%;
+    grid-template-rows: auto auto;
     grid-template-areas:
-        "header"
-        "search"
-        "bottom";
+        "header header"
+        "theme_title theme_title"
+        "form form"
+        "results results"
+        "bottom bottom"
+;
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
@@ -319,6 +312,7 @@ textarea {
 .bottom { grid-area: bottom; }
 .theme_title { grid-area: theme_title; }
 .search_section { grid-area: search; }
+#results { grid-area: results; }
 
 @media (max-width: 768px) {
     #map {
