@@ -372,7 +372,9 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if location.Ride.Activated && !timeNOW.After(validUntil) {
+		fmt.Println(validUntil)
+		fmt.Println(timeNOW)
+		if location.Ride.Activated && !validUntil.After(timeNOW) {
 			results = append(results, location)
 		}
 	}
