@@ -44,3 +44,6 @@ document.getElementById('offerForm').addEventListener('submit', function (event)
         alert('Verbindungsfehler: ' + error.message);
     });
 });
+
+
+
