@@ -98,6 +98,8 @@ func getAdressFromCoordinates(lat, lon float64) (string, string, error) {
 			City     string `json:"city"`
 		} `json:"address"`
 	}
+	fmt.Println(resp.Body)
+
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return "", "", fmt.Errorf("failed to decode JSON: %w", err)
 	}
