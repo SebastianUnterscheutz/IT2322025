@@ -301,7 +301,6 @@ textarea {
         height: 300px; /* Reduzierte Höhe für kleinere Geräte */
     }
 }
-
 .header { grid-area: header; }
 .title { grid-area: title; }
 .menu { grid-area: menu; }

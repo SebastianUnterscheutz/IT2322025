@@ -76,7 +76,7 @@
             let plz = '';
             let city = '';
 
-            if (!isNaN(input) && input.length === 5) {
+            if (!isNaN(input) && input.length <= 5) {
                 // Eingabe ist eine PLZ (5-stellige Zahl)
                 plz = input;
             } else {
