@@ -306,14 +306,18 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Abfrage der Daten aus den Tabellen locations_on_the_way und rides
+	// Abfrage der Daten aus den Tabellen locations_on_the_way und rides (nur aktive und gültige Angebote)
 	query := `
-	SELECT 
-		l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude,
-		r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
-		r.additional_information, r.other, r.token, r.activated
-	FROM locations_on_the_way l
-	JOIN rides r ON l.rides_id = r.id
-	`
+SELECT 
+	l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude,
+	r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
+	r.additional_information, r.other, r.token, r.activated
+FROM locations_on_the_way l
+JOIN rides r ON l.rides_id = r.id
+WHERE r.activated = TRUE -- Nur aktivierte Angebote
+  AND r.valid_from <= CURRENT_DATE -- Angebote, die gültig sind (Startdatum erreicht)
+  AND r.valid_until >= CURRENT_DATE -- Angebote, die noch nicht abgelaufen sind
+`
 	rows, err := dbCon.Query(query)
 	if err != nil {
 		http.Error(w, "Could not query locations and rides", http.StatusInternalServerError)
@@ -367,12 +371,16 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 
 	// SQL-Bedingungen für unscharfe Suche
 	query := `
-		SELECT l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude, 
-			   r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
-			   r.additional_information, r.other, r.token, r.activated
-		FROM locations_on_the_way l
-		JOIN rides r ON l.rides_id = r.id
-		WHERE l.plz LIKE ? AND l.city LIKE ?`
+	SELECT l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude, 
+		   r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
+		   r.additional_information, r.other, r.token, r.activated
+	FROM locations_on_the_way l
+	JOIN rides r ON l.rides_id = r.id
+	WHERE l.plz LIKE ? 
+	  AND l.city LIKE ? 
+	  AND r.activated = TRUE -- Nur aktivierte Angebote
+	  AND r.valid_from <= CURRENT_DATE -- Angebote, die gültig sind (Startdatum erreicht)
+	  AND r.valid_until >= CURRENT_DATE -- Angebote, die nicht abgelaufen sind`
 
 	// Suchmuster für unscharfe Suche vorbereiten
 	plzPattern := "%" + plz + "%"
