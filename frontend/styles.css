@@ -291,6 +291,10 @@ textarea {
     background-color: #1a252f;
 }
 
+.impressum {
+    color: white;
+}
+
 .container {
     display: grid;
     grid-template-columns: 75% 25%;
@@ -349,6 +353,20 @@ textarea {
     margin: 0 auto;
 }
 
+.impressum_container {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "header"
+        "impressum"
+        "footer"
+;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .header { grid-area: header; }
 .title { grid-area: title; }
 .menu { grid-area: menu; }
@@ -358,6 +376,7 @@ textarea {
 .theme_title { grid-area: theme_title; }
 .search_section { grid-area: search; }
 #results { grid-area: results; }
+.impressum { grid-area: impressum; }
 
 @media (max-width: 768px) {
     #map {
