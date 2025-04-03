@@ -58,7 +58,18 @@ function getData(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const offerForm = document.getElementById('offerForm');
     if (offerForm) {
-        offerForm.addEventListener('submit', handleOfferFormSubmit);
+        // offerForm.addEventListener('submit', handleOfferFormSubmit);
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        document.getElementById('gueltig_von').value = `${year}-${month}-${day}`;
+        console.log(`${year}-${month}-${day}`);
+        date.setMonth(date.getMonth() + 6);
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        document.getElementById('gueltig_bis').value = `${year}-${month}-${day}`;
     }
 });
 
