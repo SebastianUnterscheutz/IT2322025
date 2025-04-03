@@ -468,8 +468,60 @@ func editOffer(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Validate email format
+		if !isValidEmail(offer.Email) {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Invalid email format",
+			})
+			return
+		}
+
+		// Validate phone number length
+		if offer.PhoneNumber != "" && (len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15) {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Invalid phone number",
+			})
+			return
+		}
+
+		validFrom, err := time.Parse("2006-01-02", offer.ValidFrom)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Invalid date format for valid_from",
+			})
+			return
+		}
+
+		validUntil, err := time.Parse("2006-01-02", offer.ValidUntil)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Invalid date format for valid_until",
+			})
+			return
+		}
+
+		// Validate 'ValidFrom' and 'ValidUntil' fields
+		if validFrom.IsZero() || validUntil.IsZero() {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Both valid_from and valid_until must be provided",
+			})
+			return
+		}
+
 		// Angebot aktualisieren
-		_, err := dbCon.Exec("UPDATE rides SET name = ?, first_name = ?, email = ?, class = ?, phone_number = ?, valid_from = ?, valid_until = ?, additional_information = ? WHERE token = ?",
+		_, err = dbCon.Exec("UPDATE rides SET name = ?, first_name = ?, email = ?, class = ?, phone_number = ?, valid_from = ?, valid_until = ?, additional_information = ? WHERE token = ?",
 			offer.Name, offer.FirstName, offer.Email, offer.Class, offer.PhoneNumber, offer.ValidFrom, offer.ValidUntil, offer.AdditionalInformation, offer.Token)
 		if err != nil {
 			http.Error(w, "Failed to update offer", http.StatusInternalServerError)
