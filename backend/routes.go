@@ -160,7 +160,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	for lid, location := range offer.OfferLocations {
 		if location.PLZ != "" && location.City != "" {
 			address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
-			lat, lng, err := getCoordinates(address)
+			lat, lng, plz, city, err := getCoordinates(address)
 			if err != nil {
 				log.Printf("Error: %v\n", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -172,6 +172,8 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 			}
 			offer.OfferLocations[lid].Latitude = lat
 			offer.OfferLocations[lid].Longitude = lng
+			offer.OfferLocations[lid].city = city
+			offer.OfferLocations[lid].plz = plz
 		} else {
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			if err != nil {
@@ -199,7 +201,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	query := `
 		INSERT INTO rides (
-			name, first_name, email, class, phone_number, valid_from, valid_until, 
+			name, first_name, email, class, phone_number, valid_from, valid_until,
 			additional_information, other, token, activated
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
@@ -308,7 +310,7 @@ func getOffer(w http.ResponseWriter, r *http.Request) {
 	// Abfrage der Daten aus den Tabellen locations_on_the_way und rides
 	// Abfrage der Daten aus den Tabellen locations_on_the_way und rides (nur aktive und gültige Angebote)
 	query := `
-SELECT 
+SELECT
 	l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude,
 	r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
 	r.additional_information, r.other, r.token, r.activated
@@ -374,13 +376,13 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 
 	// SQL-Bedingungen für unscharfe Suche
 	query := `
-	SELECT l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude, 
+	SELECT l.id, l.rides_id, l.plz, l.city, l.street, l.house_number, l.latitude, l.longitude,
 		   r.name, r.first_name, r.email, r.class, r.phone_number, r.valid_from, r.valid_until,
 		   r.additional_information, r.other, r.token, r.activated
 	FROM locations_on_the_way l
 	JOIN rides r ON l.rides_id = r.id
-	WHERE l.plz LIKE ? 
-	  AND l.city LIKE ? 
+	WHERE l.plz LIKE ?
+	  AND l.city LIKE ?
 	  AND r.activated = TRUE -- Nur aktivierte Angebote
 	  AND r.valid_from <= CURRENT_DATE -- Angebote, die gültig sind (Startdatum erreicht)
 	  AND r.valid_until >= CURRENT_DATE -- Angebote, die nicht abgelaufen sind`
