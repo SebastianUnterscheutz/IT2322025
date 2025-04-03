@@ -172,13 +172,18 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 			}
 			offer.OfferLocations[lid].Latitude = lat
 			offer.OfferLocations[lid].Longitude = lng
-			log.Printf(offer.OfferLocations[lid].PLZ)
-			log.Printf(offer.OfferLocations[lid].City)
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
+			if plz != offer.OfferLocations[lid].PLZ {
+				log.Print("Error: Invalid postcode")
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(map[string]string{
+					"status":  "error",
+					"message": "Invalid postcode",
+				})
+				return
+			}
 			offer.OfferLocations[lid].PLZ = plz
 			offer.OfferLocations[lid].City = city
-			log.Printf(offer.OfferLocations[lid].PLZ)
-			log.Printf(offer.OfferLocations[lid].City)
 		} else {
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			if err != nil {
