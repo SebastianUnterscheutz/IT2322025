@@ -87,7 +87,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate phone number length
-	if len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15 || offer.PhoneNumber != "" {
+	if offer.PhoneNumber != "" && (len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "error",
