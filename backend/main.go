@@ -9,6 +9,7 @@ import (
 func main() {
 	// Setze das Verzeichnis für die statischen Dateien
 	staticDir := "./frontend"
+	staticImages := "./frontend/images"
 	dbCon = db.Init()
 
 	println(dbCon)
@@ -17,6 +18,7 @@ func main() {
 
 	// Routen Sie alle Anfragen an den FileServer
 	http.Handle("/", fileServer)
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(staticImages))))
 
 	// Registriere die Route /api/rides mit dem Handler handleRoute
 	http.HandleFunc("/api/create/offer", createOffer)
