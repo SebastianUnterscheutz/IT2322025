@@ -38,17 +38,18 @@ function getData(event) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data) // JSON in der exakten Reihenfolge wie definiert
-    }).then(response => {
-        if (response.ok) {
+    }).then(response => response.json())
+      .then(data => {
+        if (data.ok) {
             alert('Angebot erfolgreich erstellt.');
             window.location.href = "/";
         } else {
             alert(`
-                Fehler beim Erstellen des Angebots.
-                ${JSON.stringify(response)}`);
+                Fehler beim Erstellen des Angebots:
+
+                ${data.message}`);
             };
-            document.getElementById('anbieten').disabled = false;
-        console.log(response)
+            document.getElementById('anbieten').disabled = false
     }).catch(error => {
         alert('Verbindungsfehler: ' + error.message);
     });
