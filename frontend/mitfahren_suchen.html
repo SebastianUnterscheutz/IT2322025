@@ -119,18 +119,25 @@
                         // Marker hinzufügen
                         const marker = L.marker([lat, lng]).addTo(markerLayer);
 
-                        // Popup-Inhalt für jeden Marker
+                        // Popup auf der Karte
                         marker.bindPopup(`
-                            <h3>${offer.ride.name} (${offer.plz})</h3>
-                            <p>${offer.street} ${offer.house_number}</p>
-                            <p>Zeitraum: ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
+                            <b>${offer.ride.name}</b><br>
+                            ${offer.street} ${offer.house_number}, ${offer.plz} ${offer.city}<br>
+                            <b>Kontakt:</b> ${offer.ride.first_name} - ${offer.ride.email}<br>
+                            <b>Telefon:</b> ${offer.ride.phone_number}<br>
+                            <b>Gültig von:</b> ${offer.ride.valid_from} bis ${offer.ride.valid_until}<br>
+                            <b>Zusätzliche Infos:</b> ${offer.ride.additional_information}
                         `);
+
                         // Text-Anzeige der Ergebnisse
                         resultsDiv.innerHTML += `
                             <div class="offer">
                                 <h3>${offer.ride.name} (${offer.plz})</h3>
                                 <p>${offer.street} ${offer.house_number}, ${offer.city}</p>
-                                <p>Zeitraum: ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
+                                <p><b>Kontakt:</b> ${offer.ride.first_name} - ${offer.ride.email}</p>
+                                <p><b>Telefon:</b> ${offer.ride.phone_number}</p>
+                                <p><b>Zeitraum:</b> ${offer.ride.valid_from} - ${offer.ride.valid_until}</p>
+                                <p><b>Zusätzliche Infos:</b> ${offer.ride.additional_information}</p>
                             </div>
                         `;
                     });
