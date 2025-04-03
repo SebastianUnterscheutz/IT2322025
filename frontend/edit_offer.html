@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Angebot bearbeiten</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
 </head>
 <body>
-<div class="container">
+<div class="anbieten_container">
     <div class="header">
         <div>
             <a href="index.html">
@@ -28,18 +31,36 @@
         <h2>Angebot bearbeiten</h2>
     </div>
     <div class="form">
-        <form id="editForm" method="post">
+        <form id="offerForm" method="post">
             <label>Name:<br> <input type="text" id="name" name="name" placeholder="Name"></label><br><br>
-            <label>Vorname:<br> <input type="text" id="first_name" name="first_name" placeholder="Vorname"></label><br><br>
+            <label>Vorname:<br> <input type="text" id="first_name" name="first_name"
+                                       placeholder="Vorname"></label><br><br>
             <label>E-Mail:<br> <input type="email" id="email" name="email" placeholder="E-Mail"></label><br><br>
-            <label>Handynummer:<br> <input type="text" id="phone_number" name="phone_number" placeholder="Telefon"></label><br><br>
+            <label>Handynummer:<br> <input type="text" id="phone_number" name="phone_number"
+                                           placeholder="Telefon"></label><br><br>
             <label>Gültig von:<br> <input type="date" id="valid_from" name="valid_from"></label><br><br>
             <label>Gültig bis:<br> <input type="date" id="valid_until" name="valid_until"></label><br><br>
             <label>Zusätzliche Informationen:<br>
-                <textarea id="additional_information" name="additional_information" placeholder="Zusätzliche Informationen"></textarea>
+                <textarea id="additional_information" name="additional_information"
+                          placeholder="Zusätzliche Informationen"></textarea>
             </label><br><br>
+            <label>Weitere Orte zum Mitnehmen:</label>
+            <div class="ausgewaehlte_map" id="map"></div>
+            <br>
+            <label>Hinweis:
+                <div>
+                    Nach dem Absenden werden die Daten geprüft und eine E-Mail zur Bestätigung an die gegebene Adresse
+                    geschickt. In der E-Mail wird um eine Bestätigung gebeten, um das Angebot zu aktivieren oder bei
+                    Bedarf zu bearbeiten.
+                </div>
+            </label><br>
             <button id="anbieten" class="anbieten_button" type="submit">Speichern</button>
         </form>
+    </div>
+    <div class="footer">
+        <div class="footer_menu">
+            <a href="impressum.html">Impressum</a>
+        </div>
     </div>
 </div>
 <script>
@@ -62,7 +83,7 @@
     };
 
     // Formular aktualisieren
-    document.getElementById("editForm").onsubmit = function (e) {
+    document.getElementById("offerForm").onsubmit = function (e) {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
@@ -85,5 +106,9 @@
             });
     };
 </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script>javascript:loadMapInForm()</script>
 </body>
 </html>
