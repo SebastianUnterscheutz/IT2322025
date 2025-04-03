@@ -47,7 +47,7 @@ var dbCon *sql.DB
 func createOffer(w http.ResponseWriter, r *http.Request) {
 	// Nur POST-Anfragen zulassen
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, `{"status":"error","message":"Method not allowed"}`, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -55,8 +55,12 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 
 	// JSON-Daten aus dem Request-Body einlesen
 	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
-		fmt.Println(err)
-		http.Error(w, "Invalid input data", http.StatusBadRequest)
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Invalid input data",
+		})
 		return
 	}
 
@@ -64,98 +68,136 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	offer.Activated = true
 	// Validate required fields are not empty
 	if offer.Name == "" || offer.Email == "" {
-		http.Error(w, "Missing required fields", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Missing required fields",
+		})
 		return
 	}
 
 	// Validate email format
 	if !isValidEmail(offer.Email) {
-		http.Error(w, "Invalid email format", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Invalid email format",
+		})
 		return
 	}
 
-	// Validate phone number length (e.g., you can adjust as per your system's requirement)
+	// Validate phone number length
 	if len(offer.PhoneNumber) < 10 || len(offer.PhoneNumber) > 15 || offer.PhoneNumber != "" {
-		http.Error(w, "Invalid phone number", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Invalid phone number",
+		})
 		return
 	}
 
 	validFrom, err := time.Parse("2006-01-02", offer.ValidFrom)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Invalid date format for valid_from",
+		})
 		return
 	}
 
 	validUntil, err := time.Parse("2006-01-02", offer.ValidUntil)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Invalid date format for valid_until",
+		})
 		return
 	}
 
 	// Validate 'ValidFrom' and 'ValidUntil' fields
-	if validFrom.IsZero() || validFrom.IsZero() {
-		http.Error(w, "Both valid_from and valid_until must be provided", http.StatusBadRequest)
+	if validFrom.IsZero() || validUntil.IsZero() {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Both valid_from and valid_until must be provided",
+		})
 		return
 	}
 
 	// Ensure 'ValidFrom' is before 'ValidUntil'
 	if !validFrom.Before(validUntil) {
-		http.Error(w, "valid_from must be before valid_until", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "valid_from must be before valid_until",
+		})
 		return
 	}
 
 	if offer.OfferLocations == nil {
-		fmt.Println("No locations provided")
-		http.Error(w, "No locations provided", http.StatusBadRequest)
+		log.Println("No locations provided")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "No locations provided",
+		})
 		return
 	}
 
 	if len(offer.OfferLocations) >= 20 {
-		fmt.Println("Too many locations provided")
-		http.Error(w, "Too many locations provided", http.StatusBadRequest)
+		log.Println("Too many locations provided")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Too many locations provided",
+		})
 		return
 	}
 
 	for lid, location := range offer.OfferLocations {
-
 		if location.PLZ != "" && location.City != "" {
 			address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
 			lat, lng, err := getCoordinates(address)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-				http.Error(w, "Could not get coordinates", http.StatusInternalServerError)
+				log.Printf("Error: %v\n", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(map[string]string{
+					"status":  "error",
+					"message": "Could not get coordinates",
+				})
 				return
-			} else {
-				fmt.Printf("Latitude: %f, Longitude: %f\n", lat, lng)
 			}
-
 			offer.OfferLocations[lid].Latitude = lat
 			offer.OfferLocations[lid].Longitude = lng
 		} else {
-			fmt.Println(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-				http.Error(w, "Could not get Address", http.StatusInternalServerError)
+				log.Printf("Error: %v\n", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(map[string]string{
+					"status":  "error",
+					"message": "Could not get address",
+				})
 				return
-			} else {
-				fmt.Printf("plz: %f, city: %f\n", plz, city)
 			}
-
 			offer.OfferLocations[lid].PLZ = plz
 			offer.OfferLocations[lid].City = city
 		}
 
 		if offer.OfferLocations[lid].Latitude == 0 && offer.OfferLocations[lid].Longitude == 0 && offer.OfferLocations[lid].PLZ == "" && offer.OfferLocations[lid].City == "" {
-			http.Error(w, "Invalid coordinates OR PLZ and CITY", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Invalid coordinates OR PLZ and CITY",
+			})
 			return
 		}
-
 	}
 
-	// Prepared Statement für die Datenbankeintragung
 	query := `
 		INSERT INTO rides (
 			name, first_name, email, class, phone_number, valid_from, valid_until, 
@@ -163,10 +205,13 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	// Query ausführen
 	stmt, err := dbCon.Prepare(query)
 	if err != nil {
-		http.Error(w, "Could not prepare SQL statement", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Could not prepare SQL statement",
+		})
 		log.Printf("Error preparing query: %v", err)
 		return
 	}
@@ -187,61 +232,70 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 		offer.Activated,
 	)
 	if err != nil {
-		http.Error(w, "Could not execute SQL statement", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Could not execute SQL statement",
+		})
 		log.Printf("Error executing query: %v", err)
 		return
 	}
 
 	rideID, err := res.LastInsertId()
 	if err != nil {
-		http.Error(w, "Could not retrieve last insert ID for rides", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Could not retrieve last insert ID for rides",
+		})
 		log.Printf("Error retrieving last insert ID: %v", err)
 		return
 	}
 
-	defer stmt.Close()
-
 	for _, location := range offer.OfferLocations {
-
 		insertLocationSQL := `
 			INSERT INTO locations_on_the_way (
 			rides_id, plz, city, street, house_number, latitude, longitude
 			) VALUES (?, ?, ?, ?, ?, ?, ?)`
-
 		stmtLocation, err := dbCon.Prepare(insertLocationSQL)
 
-		// Füge Eintrag basierend auf Informationen im `offer` ein
 		_, err = stmtLocation.Exec(
-			rideID,               // Beispiel rides_id, anpassen, um relevante ID zu übernehmen
-			location.PLZ,         // PLZ aus dem offer Struct
-			location.City,        // Ort aus dem offer Struct
-			location.Street,      // Straße aus dem offer Struct
-			location.HouseNumber, // Hausnummer (optional, falls nicht im Struct)
+			rideID,
+			location.PLZ,
+			location.City,
+			location.Street,
+			location.HouseNumber,
 			location.Latitude,
 			location.Longitude,
 		)
 
 		if err != nil {
-			http.Error(w, "Could not prepare insert statement for locations", http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"message": "Could not prepare insert statement for locations",
+			})
 			log.Printf("Error preparing insert statement for locations: %v", err)
 			return
 		}
 		defer stmtLocation.Close()
 	}
 
-	// Aktivierungs-E-Mail senden
 	if err := sendActivationEmail(offer.Email, offer.Token); err != nil {
 		log.Println("E-Mail konnte nicht gesendet werden:", err)
-		http.Error(w, "Offer created but email could not be sent", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": "Offer created but email could not be sent",
+		})
 		return
 	}
 
-	// Erfolgsmeldung zurückgeben
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Offer created successfully",
 		"status":  "success",
+		"message": "Offer created successfully",
 	})
 }
 
