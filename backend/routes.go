@@ -160,7 +160,7 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	for lid, location := range offer.OfferLocations {
 		if location.PLZ != "" && location.City != "" {
 			address := location.Street + " " + location.HouseNumber + ", " + location.City + ", " + location.PLZ
-			lat, lng, plz, city, err := getCoordinates(address)
+			lat, lng, err := getCoordinates(address)
 			if err != nil {
 				log.Printf("Error: %v\n", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -172,8 +172,6 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 			}
 			offer.OfferLocations[lid].Latitude = lat
 			offer.OfferLocations[lid].Longitude = lng
-			offer.OfferLocations[lid].City = city
-			offer.OfferLocations[lid].PLZ = plz
 		} else {
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			if err != nil {

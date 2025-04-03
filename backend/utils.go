@@ -49,12 +49,6 @@ func getCoordinates(address string) (float64, float64, error) {
 	var data []struct {
 		Lat string `json:"lat"`
 		Lon string `json:"lon"`
-		Address struct {
-			Postcode string `json:"postcode"`
-			City     string `json:"city"`
-			Town     string `json:"town"` // Einige Antworten könnten `town` statt `city` verwenden
-			Village  string `json:"village"`
-		} `json:"address"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return 0, 0, fmt.Errorf("failed to decode JSON: %w", err)
@@ -76,20 +70,9 @@ func getCoordinates(address string) (float64, float64, error) {
 		return 0, 0, fmt.Errorf("failed to parse longitude: %w", err)
 	}
 
-	// Extrahiere Postcode und Ort
-	postcode := data.Address.Postcode
-	var city string
-	if data.Address.City != "" {
-		city = data.Address.City
-	} else if data.Address.Town != "" {
-		city = data.Address.Town
-	} else if data.Address.Village != "" {
-		city = data.Address.Village
-	}
-
 	fmt.Println(lat, lon)
 
-	return lat, lon, plz, city, nil
+	return lat, lon, nil
 }
 
 func getAdressFromCoordinates(lat, lon float64) (string, string, error) {
