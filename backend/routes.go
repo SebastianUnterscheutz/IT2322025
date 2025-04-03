@@ -347,6 +347,9 @@ WHERE r.activated = TRUE -- Nur aktivierte Angebote
 			return
 		}
 
+		location.Ride.Activated = false
+		location.Ride.Token = "NICE TRY"
+
 		locationsWithRides = append(locationsWithRides, location)
 
 	}
@@ -414,6 +417,8 @@ func searchOffers(w http.ResponseWriter, r *http.Request) {
 		}
 
 		location.Ride = &ride
+		ride.Activated = false
+		ride.Token = "NICE TRY"
 		results = append(results, location)
 	}
 
