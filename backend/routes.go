@@ -172,9 +172,13 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 			}
 			offer.OfferLocations[lid].Latitude = lat
 			offer.OfferLocations[lid].Longitude = lng
+			log.Printf(offer.OfferLocations[lid].PLZ)
+			log.Printf(offer.OfferLocations[lid].City)
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			offer.OfferLocations[lid].PLZ = plz
 			offer.OfferLocations[lid].City = city
+			log.Printf(offer.OfferLocations[lid].PLZ)
+			log.Printf(offer.OfferLocations[lid].City)
 		} else {
 			plz, city, err := getAdressFromCoordinates(offer.OfferLocations[lid].Latitude, offer.OfferLocations[lid].Longitude)
 			if err != nil {
