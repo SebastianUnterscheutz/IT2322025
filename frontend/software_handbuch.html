@@ -55,13 +55,13 @@
                 <li><strong>PLZ:</strong> (Pflichtfeld) Geben Sie Ihre Postleitzahl ein.</li>
                 <li><strong>Ort:</strong> (Pflichtfeld) Geben Sie den Ort ein, von dem Sie abfahren.</li>
                 <li><strong>Straße, Hausnummer:</strong> (Optional) Geben Sie die Straße und Hausnummer ein.</li>
-                <li><strong>Name:</strong> (Pflichtfeld) Geben Sie Ihren Nachnamen ein.</li>
+                <li><strong>Nachname:</strong> (Pflichtfeld) Geben Sie Ihren Nachnamen ein.</li>
                 <li><strong>Vorname:</strong> (Optional) Geben Sie Ihren Vornamen ein.</li>
                 <li><strong>E-Mail:</strong> (Pflichtfeld) Geben Sie Ihre E-Mail-Adresse ein.</li>
                 <li><strong>Klasse:</strong> (Optional) Geben Sie Ihre Klasse ein (z. B. IT23x).</li>
                 <li><strong>Handynummer:</strong> (Optional) Geben Sie Ihre Handynummer ein.</li>
-                <li><strong>Gültigkeitsdatum von:</strong> (Optional, Standard: ab sofort) Das Startdatum der Mitfahrgelegenheit.</li>
-                <li><strong>Gültigkeitsdatum bis:</strong> (Optional, Standard: 6 Monate) Das Enddatum der Mitfahrgelegenheit.</li>
+                <li><strong>Gültigkeitsdatum von:</strong> (Pflichtfeld, Standard: ab sofort) Das Startdatum der Mitfahrgelegenheit.</li>
+                <li><strong>Gültigkeitsdatum bis:</strong> (Pflichtfeld, Standard: 6 Monate) Das Enddatum der Mitfahrgelegenheit.</li>
                 <li><strong>Weitere Informationen:</strong> (Optional) Geben Sie Zusatzinformationen wie Kostenbeteiligung ein.</li>
             </ul>
             <p><strong>Funktionsweise:</strong> Wenn das Formular erfolgreich ausgefüllt ist, wird eine Mitfahrgelegenheit erstellt und in der Datenbank gespeichert. Ein Zufallscode wird generiert, um das Angebot später zu bearbeiten oder zu löschen. Der Benutzer erhält eine Bestätigung per E-Mail.</p>
@@ -70,14 +70,12 @@
             <p><strong>Beschreibung:</strong> Diese Funktion erlaubt es den Nutzern, nach Mitfahrgelegenheiten zu suchen.</p>
             <p><strong>Eingabefelder:</strong></p>
             <ul>
-                <li><strong>PLZ:</strong> (Pflichtfeld) Geben Sie Ihre Postleitzahl ein.</li>
-                <li><strong>Ort:</strong> (Pflichtfeld) Geben Sie den Ort ein, in dem Sie eine Mitfahrgelegenheit suchen.</li>
+                <li><strong>PLZ oder Ort:</strong> (Pflichtfeld) Geben Sie Ihre Postleitzahl ein.</li>
             </ul>
             <p><strong>Kartenanzeige:</strong> Nach der Eingabe der Postleitzahl und des Ortes werden alle Mitfahrgelegenheiten auf einer Karte angezeigt. Durch Klicken auf einen Pin auf der Karte erhalten Sie weitere Informationen zu der Mitfahrgelegenheit, wie Name des Anbieters, Startzeit und -ort sowie eine Kontaktmöglichkeit.</p>
 
             <h3>Erweiterte Funktionen</h3>
             <ul>
-                <li><strong>Umkreissuche:</strong> Suche nach Mitfahrgelegenheiten im Umkreis von z.B. 5 km Luftlinie.</li>
                 <li><strong>Liste der Mitfahrgelegenheiten:</strong> Darstellung der Mitfahrgelegenheiten als Liste mit den wichtigsten Informationen.</li>
                 <li><strong>Schutz gegen Fake-Angebote:</strong> Die Applikation ist gegen massenhafte Fake-Angebote geschützt. Falsche oder unvollständige Angaben werden abgefangen und können vom Support bearbeitet werden.</li>
             </ul>
@@ -90,14 +88,12 @@
             <ul>
                 <li><strong>Mitfahrgelegenheiten:</strong> Tabelle mit den Feldern (PLZ, Ort, Straße, Hausnummer, Name, E-Mail, etc.).</li>
                 <li><strong>Benutzerdaten:</strong> Speicherung von Informationen für das Bearbeiten der Angebote.</li>
-                <li><strong>Umkreissuche:</strong> Implementierung einer geografischen Suche für die Mitfahrgelegenheiten.</li>
             </ul>
 
             <h3>Technologie-Stack</h3>
             <ul>
                 <li><strong>Frontend:</strong> HTML, CSS, JavaScript, OpenStreetMap API für die Kartenanzeige.</li>
-                <li><strong>Backend:</strong> PHP mit MySQL-Datenbank für die Speicherung der Mitfahrgelegenheiten.</li>
-                <li><strong>Benutzerdaten:</strong> Sicherheit durch Verschlüsselung von persönlichen Daten.</li>
+                <li><strong>Backend:</strong> Go mit MariaDB-Datenbank für die Speicherung der Mitfahrgelegenheiten.</li>
             </ul>
         </section>
 
@@ -112,7 +108,7 @@
 
         <section id="nutzerhilfe">
             <h2>Nutzerhilfe und Support</h2>
-            <p>Für technische Probleme oder Anfragen zum Anlegen und Bearbeiten von Mitfahrgelegenheiten steht unser Support-Team zur Verfügung. Sie können uns per E-Mail oder über das Kontaktformular erreichen.</p>
+            <p>Für technische Probleme oder Anfragen zum Anlegen und Bearbeiten von Mitfahrgelegenheiten steht unser Support-Team zur Verfügung. Sie können uns per E-Mail erreichen.</p>
         </section>
 
         <section id="design-und-ux">
@@ -123,7 +119,6 @@
         <section id="sicherheit-und-datenschutz">
             <h2>Sicherheit und Datenschutz</h2>
             <ul>
-                <li><strong>Datenverschlüsselung:</strong> Alle persönlichen Daten werden sicher verschlüsselt gespeichert.</li>
                 <li><strong>Zugangskontrolle:</strong> Jeder Benutzer kann nur seine eigenen Mitfahrgelegenheiten bearbeiten oder löschen.</li>
             </ul>
         </section>
