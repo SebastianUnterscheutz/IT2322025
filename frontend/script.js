@@ -40,7 +40,7 @@ function getData(event) {
         body: JSON.stringify(data) // JSON in der exakten Reihenfolge wie definiert
     }).then(response => response.json())
       .then(data => {
-        if (data.ok) {
+        if (data.status == 'success') {
             alert('Angebot erfolgreich erstellt.');
             window.location.href = "/";
         } else {
