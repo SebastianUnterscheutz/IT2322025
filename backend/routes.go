@@ -437,6 +437,7 @@ func editOffer(w http.ResponseWriter, r *http.Request) {
 		err := dbCon.QueryRow("SELECT name, first_name, email, class, phone_number, valid_from, valid_until, additional_information FROM offers WHERE token = ?", token).Scan(
 			&offer.Name, &offer.FirstName, &offer.Email, &offer.Class, &offer.PhoneNumber, &offer.ValidFrom, &offer.ValidUntil, &offer.AdditionalInformation,
 		)
+
 		if err != nil {
 			fmt.Println(err)
 			http.Error(w, "Offer not found", http.StatusNotFound)

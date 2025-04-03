@@ -72,9 +72,7 @@
                 document.getElementById("valid_until").value = data.valid_until;
                 document.getElementById("additional_information").value = data.additional_information;
             });
-    };
 
-    window.onload = function () {
         fetch(`/api/activate/offer?token=${token}`)
             .then(response => response.json());
     };
