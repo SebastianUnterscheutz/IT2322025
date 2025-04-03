@@ -28,7 +28,8 @@ function getData(event) {
     for (var i = 0; i < filteredLocations.length; i++) {
         data.offer_locations.push(filteredLocations[i]);
     }
-    console.log(data.offer_locations)
+
+    document.getElementById('anbieten').disabled = true;
 
     // Daten an das Backend senden
     fetch('/api/create/offer', {
@@ -40,12 +41,13 @@ function getData(event) {
     }).then(response => {
         if (response.ok) {
             alert('Angebot erfolgreich erstellt.');
-            window.location.href = "https://it232.zbcs.eu";
+            window.location.href = "/";
         } else {
             alert(`
                 Fehler beim Erstellen des Angebots.
                 ${JSON.stringify(response)}`);
-        }
+            };
+            document.getElementById('anbieten').disabled = false;
         console.log(response)
     }).catch(error => {
         alert('Verbindungsfehler: ' + error.message);

@@ -164,6 +164,11 @@ textarea {
     background-color: #0056b3;
 }
 
+.anbieten_button:disabled {
+    background-color: #1a252f;
+    color: #555;
+}
+
 .places-form input {
     margin-bottom: 10px;
 }
@@ -460,6 +465,3 @@ textarea {
         width: auto;
     }
 }
-
-
-
