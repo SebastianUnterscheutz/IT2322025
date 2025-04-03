@@ -434,7 +434,7 @@ func editOffer(w http.ResponseWriter, r *http.Request) {
 
 		// Eintrag abrufen
 		var offer Offer
-		err := dbCon.QueryRow("SELECT name, first_name, email, class, phone_number, valid_from, valid_until, additional_information FROM offers WHERE token = ?", token).Scan(
+		err := dbCon.QueryRow("SELECT name, first_name, email, class, phone_number, valid_from, valid_until, additional_information FROM rides WHERE token = ?", token).Scan(
 			&offer.Name, &offer.FirstName, &offer.Email, &offer.Class, &offer.PhoneNumber, &offer.ValidFrom, &offer.ValidUntil, &offer.AdditionalInformation,
 		)
 
@@ -461,7 +461,7 @@ func editOffer(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Angebot aktualisieren
-		_, err := dbCon.Exec("UPDATE offers SET name = ?, first_name = ?, email = ?, class = ?, phone_number = ?, valid_from = ?, valid_until = ?, additional_information = ? WHERE token = ?",
+		_, err := dbCon.Exec("UPDATE rides SET name = ?, first_name = ?, email = ?, class = ?, phone_number = ?, valid_from = ?, valid_until = ?, additional_information = ? WHERE token = ?",
 			offer.Name, offer.FirstName, offer.Email, offer.Class, offer.PhoneNumber, offer.ValidFrom, offer.ValidUntil, offer.AdditionalInformation, offer.Token)
 		if err != nil {
 			http.Error(w, "Failed to update offer", http.StatusInternalServerError)
