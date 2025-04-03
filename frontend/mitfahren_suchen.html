@@ -152,13 +152,7 @@
 
         // Event-Listener für Eingabefeld
         searchField.addEventListener('input', () => {
-            if (searchField.value.trim() !== '') {
-                fetchSearchResults();
-            } else {
-                // Ergebnisse und Marker löschen, wenn das Feld leer ist
-                resultsDiv.innerHTML = '';
-                markerLayer.clearLayers();
-            }
+            fetchSearchResults();
         });
     });
 </script>
