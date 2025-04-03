@@ -43,17 +43,8 @@
             <label>Zusätzliche Informationen:<br>
                 <textarea id="additional_information" name="additional_information"
                           placeholder="Zusätzliche Informationen"></textarea>
-            </label><br><br>
-            <label>Weitere Orte zum Mitnehmen:</label>
-            <div class="ausgewaehlte_map" id="map"></div>
-            <br>
-            <label>Hinweis:
-                <div>
-                    Nach dem Absenden werden die Daten geprüft und eine E-Mail zur Bestätigung an die gegebene Adresse
-                    geschickt. In der E-Mail wird um eine Bestätigung gebeten, um das Angebot zu aktivieren oder bei
-                    Bedarf zu bearbeiten.
-                </div>
             </label><br>
+            <br>
             <button id="anbieten" class="anbieten_button" type="submit">Speichern</button>
         </form>
     </div>
@@ -81,6 +72,13 @@
                 document.getElementById("additional_information").value = data.additional_information;
             });
     };
+
+    window.onload = function () {
+        fetch(`/api/activate/offer?token=${token}`)
+            .then(response => response.json());
+    };
+
+
 
     // Formular aktualisieren
     document.getElementById("offerForm").onsubmit = function (e) {

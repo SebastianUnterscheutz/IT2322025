@@ -65,7 +65,6 @@ func createOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	offer.Token = fmt.Sprintf("%s-%s-%s-%s", randomString(4), randomString(4), randomString(4), randomString(3))
-	offer.Activated = true
 	// Validate required fields are not empty
 	if offer.Name == "" || offer.Email == "" {
 		w.WriteHeader(http.StatusBadRequest)
