@@ -438,6 +438,7 @@ func editOffer(w http.ResponseWriter, r *http.Request) {
 			&offer.Name, &offer.FirstName, &offer.Email, &offer.Class, &offer.PhoneNumber, &offer.ValidFrom, &offer.ValidUntil, &offer.AdditionalInformation,
 		)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Offer not found", http.StatusNotFound)
 			return
 		}
