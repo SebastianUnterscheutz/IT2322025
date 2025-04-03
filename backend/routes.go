@@ -483,7 +483,7 @@ func activateOffer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Eintrag aktivieren
-	_, err := dbCon.Exec("UPDATE offers SET activated = TRUE WHERE token = ?", token)
+	_, err := dbCon.Exec("UPDATE rides SET activated = TRUE WHERE token = ?", token)
 	if err != nil {
 		http.Error(w, "Failed to activate offer", http.StatusInternalServerError)
 		return
